@@ -13,6 +13,8 @@ import { Route as DocsRouteImport } from './routes/docs'
 import { Route as AppRouteImport } from './routes/app'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AppIndexRouteImport } from './routes/app.index'
+import { Route as AuthSignupRouteImport } from './routes/auth.signup'
+import { Route as AuthSigninRouteImport } from './routes/auth.signin'
 import { Route as AppVirtualAccountsRouteImport } from './routes/app.virtual-accounts'
 import { Route as AppSuppliersRouteImport } from './routes/app.suppliers'
 import { Route as AppSubscriptionsRouteImport } from './routes/app.subscriptions'
@@ -38,6 +40,16 @@ const AppIndexRoute = AppIndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => AppRoute,
+} as any)
+const AuthSignupRoute = AuthSignupRouteImport.update({
+  id: '/auth/signup',
+  path: '/auth/signup',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthSigninRoute = AuthSigninRouteImport.update({
+  id: '/auth/signin',
+  path: '/auth/signin',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const AppVirtualAccountsRoute = AppVirtualAccountsRouteImport.update({
   id: '/virtual-accounts',
@@ -74,6 +86,8 @@ export interface FileRoutesByFullPath {
   '/app/subscriptions': typeof AppSubscriptionsRoute
   '/app/suppliers': typeof AppSuppliersRoute
   '/app/virtual-accounts': typeof AppVirtualAccountsRoute
+  '/auth/signin': typeof AuthSigninRoute
+  '/auth/signup': typeof AuthSignupRoute
   '/app/': typeof AppIndexRoute
 }
 export interface FileRoutesByTo {
@@ -84,6 +98,8 @@ export interface FileRoutesByTo {
   '/app/subscriptions': typeof AppSubscriptionsRoute
   '/app/suppliers': typeof AppSuppliersRoute
   '/app/virtual-accounts': typeof AppVirtualAccountsRoute
+  '/auth/signin': typeof AuthSigninRoute
+  '/auth/signup': typeof AuthSignupRoute
   '/app': typeof AppIndexRoute
 }
 export interface FileRoutesById {
@@ -96,6 +112,8 @@ export interface FileRoutesById {
   '/app/subscriptions': typeof AppSubscriptionsRoute
   '/app/suppliers': typeof AppSuppliersRoute
   '/app/virtual-accounts': typeof AppVirtualAccountsRoute
+  '/auth/signin': typeof AuthSigninRoute
+  '/auth/signup': typeof AuthSignupRoute
   '/app/': typeof AppIndexRoute
 }
 export interface FileRouteTypes {
@@ -109,6 +127,8 @@ export interface FileRouteTypes {
     | '/app/subscriptions'
     | '/app/suppliers'
     | '/app/virtual-accounts'
+    | '/auth/signin'
+    | '/auth/signup'
     | '/app/'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -119,6 +139,8 @@ export interface FileRouteTypes {
     | '/app/subscriptions'
     | '/app/suppliers'
     | '/app/virtual-accounts'
+    | '/auth/signin'
+    | '/auth/signup'
     | '/app'
   id:
     | '__root__'
@@ -130,6 +152,8 @@ export interface FileRouteTypes {
     | '/app/subscriptions'
     | '/app/suppliers'
     | '/app/virtual-accounts'
+    | '/auth/signin'
+    | '/auth/signup'
     | '/app/'
   fileRoutesById: FileRoutesById
 }
@@ -137,6 +161,8 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AppRoute: typeof AppRouteWithChildren
   DocsRoute: typeof DocsRoute
+  AuthSigninRoute: typeof AuthSigninRoute
+  AuthSignupRoute: typeof AuthSignupRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -168,6 +194,20 @@ declare module '@tanstack/react-router' {
       fullPath: '/app/'
       preLoaderRoute: typeof AppIndexRouteImport
       parentRoute: typeof AppRoute
+    }
+    '/auth/signup': {
+      id: '/auth/signup'
+      path: '/auth/signup'
+      fullPath: '/auth/signup'
+      preLoaderRoute: typeof AuthSignupRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/auth/signin': {
+      id: '/auth/signin'
+      path: '/auth/signin'
+      fullPath: '/auth/signin'
+      preLoaderRoute: typeof AuthSigninRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/app/virtual-accounts': {
       id: '/app/virtual-accounts'
@@ -231,6 +271,8 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AppRoute: AppRouteWithChildren,
   DocsRoute: DocsRoute,
+  AuthSigninRoute: AuthSigninRoute,
+  AuthSignupRoute: AuthSignupRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
