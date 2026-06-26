@@ -4,7 +4,7 @@ import { PageHeader } from "@/components/page-header";
 import { Button } from "@/components/ui/button";
 
 export const Route = createFileRoute("/app/virtual-accounts")({
-  component: VirtualAccounts;
+  component: VirtualAccounts,
 });
 
 const ACCOUNTS = [
