@@ -12,14 +12,14 @@ import {
 } from "lucide-react";
 import { Logo } from "./brand";
 
-const NAV = [
+const NAV: Array<{ to: string; label: string; icon: typeof LayoutDashboard; exact?: boolean }> = [
   { to: "/app", label: "Overview", icon: LayoutDashboard, exact: true },
   { to: "/app/purchase-orders", label: "Purchase Orders", icon: FileText },
   { to: "/app/suppliers", label: "Suppliers", icon: Users },
   { to: "/app/settlements", label: "Settlements", icon: Split },
   { to: "/app/virtual-accounts", label: "Virtual Accounts", icon: Wallet },
   { to: "/app/subscriptions", label: "Subscriptions", icon: Repeat },
-] as const;
+];
 
 export function AppShell() {
   const pathname = useRouterState({ select: (s) => s.location.pathname });
