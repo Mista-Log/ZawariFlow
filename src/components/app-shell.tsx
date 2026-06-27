@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link, Outlet, useRouterState } from "@tanstack/react-router";
+import { Link, Outlet, useLocation } from "react-router-dom";
 import {
   LayoutDashboard,
   FileText,
@@ -77,17 +77,15 @@ function SidebarContent({ pathname, onNavigate }: { pathname: string; onNavigate
 }
 
 export function AppShell() {
-  const pathname = useRouterState({ select: (s) => s.location.pathname });
+  const { pathname } = useLocation();
   const [mobileOpen, setMobileOpen] = useState(false);
 
   return (
     <div className="flex min-h-screen bg-background">
-      {/* Desktop sidebar */}
       <aside className="hidden w-64 shrink-0 border-r border-sidebar-border bg-sidebar md:flex md:flex-col">
         <SidebarContent pathname={pathname} />
       </aside>
 
-      {/* Mobile sidebar drawer */}
       {mobileOpen && (
         <div className="fixed inset-0 z-50 md:hidden">
           <div
@@ -122,7 +120,7 @@ export function AppShell() {
               <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
               <input
                 placeholder="Search…"
-                className="w-full rounded-md border border-input bg-secondary/40 py-2 pl-9 pr-3 text-sm placeholder:text-muted-foreground focus:border-ring focus:bg-background focus:outline-none focus:ring-2 focus:ring-ring/20 sm:placeholder:[content:'Search_POs,_suppliers,_settlements…']"
+                className="w-full rounded-md border border-input bg-secondary/40 py-2 pl-9 pr-3 text-sm placeholder:text-muted-foreground focus:border-ring focus:bg-background focus:outline-none focus:ring-2 focus:ring-ring/20"
               />
             </div>
           </div>

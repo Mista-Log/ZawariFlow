@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link } from "@tanstack/react-router";
+import { Link } from "react-router-dom";
 import { Menu, X } from "lucide-react";
 import { Logo } from "./brand";
 import { Button } from "./ui/button";
@@ -13,9 +13,9 @@ export function MarketingNav() {
         <Logo />
 
         <nav className="hidden items-center gap-7 text-sm text-muted-foreground md:flex">
-          <Link to="/" hash="product" className="hover:text-foreground">Product</Link>
-          <Link to="/" hash="how" className="hover:text-foreground">How it works</Link>
-          <Link to="/" hash="pricing" className="hover:text-foreground">Pricing</Link>
+          <a href="/#product" className="hover:text-foreground">Product</a>
+          <a href="/#how" className="hover:text-foreground">How it works</a>
+          <a href="/#pricing" className="hover:text-foreground">Pricing</a>
           <Link to="/docs" className="hover:text-foreground">Docs</Link>
         </nav>
 
@@ -40,9 +40,9 @@ export function MarketingNav() {
       {open && (
         <div className="border-t border-border bg-background md:hidden">
           <div className="mx-auto flex max-w-7xl flex-col gap-1 px-4 py-3 text-sm">
-            <Link to="/" hash="product" onClick={() => setOpen(false)} className="rounded-md px-3 py-2 text-muted-foreground hover:bg-accent hover:text-foreground">Product</Link>
-            <Link to="/" hash="how" onClick={() => setOpen(false)} className="rounded-md px-3 py-2 text-muted-foreground hover:bg-accent hover:text-foreground">How it works</Link>
-            <Link to="/" hash="pricing" onClick={() => setOpen(false)} className="rounded-md px-3 py-2 text-muted-foreground hover:bg-accent hover:text-foreground">Pricing</Link>
+            <a href="/#product" onClick={() => setOpen(false)} className="rounded-md px-3 py-2 text-muted-foreground hover:bg-accent hover:text-foreground">Product</a>
+            <a href="/#how" onClick={() => setOpen(false)} className="rounded-md px-3 py-2 text-muted-foreground hover:bg-accent hover:text-foreground">How it works</a>
+            <a href="/#pricing" onClick={() => setOpen(false)} className="rounded-md px-3 py-2 text-muted-foreground hover:bg-accent hover:text-foreground">Pricing</a>
             <Link to="/docs" onClick={() => setOpen(false)} className="rounded-md px-3 py-2 text-muted-foreground hover:bg-accent hover:text-foreground">Docs</Link>
             <div className="mt-2 grid grid-cols-2 gap-2 border-t border-border pt-3">
               <Button asChild variant="outline" size="sm">

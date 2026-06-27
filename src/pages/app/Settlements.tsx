@@ -1,9 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
 import { PageHeader } from "@/components/page-header";
-
-export const Route = createFileRoute("/app/settlements")({
-  component: Settlements,
-});
 
 const ROWS = [
   { id: "STL-90412", po: "PO-48211", to: "Hexa Steel Factory", amount: "114,390,000", method: "NIP transfer", status: "Settled", at: "Jun 24, 14:02" },
@@ -24,12 +19,12 @@ function badge(s: string) {
   }
 }
 
-function Settlements() {
+export default function Settlements() {
   return (
     <>
       <PageHeader title="Settlements" description="Every disbursement leg of every purchase order." />
 
-      <div className="overflow-hidden rounded-xl border border-border bg-card">
+      <div className="overflow-x-auto rounded-xl border border-border bg-card">
         <table className="w-full text-sm">
           <thead className="border-b border-border bg-secondary/50 text-xs uppercase tracking-wider text-muted-foreground">
             <tr>

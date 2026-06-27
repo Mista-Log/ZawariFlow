@@ -1,26 +1,15 @@
-import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { ArrowRight, Eye, EyeOff } from "lucide-react";
 import { Logo } from "@/components/brand";
 import { Button } from "@/components/ui/button";
 
-export const Route = createFileRoute("/auth/signin")({
-  head: () => ({
-    meta: [
-      { title: "Sign in — ZawariFlow" },
-      { name: "description", content: "Sign in to your ZawariFlow operator account." },
-    ],
-  }),
-  component: SignIn,
-});
-
-function SignIn() {
+export default function SignIn() {
   const navigate = useNavigate();
   const [showPwd, setShowPwd] = useState(false);
 
   return (
     <div className="grid min-h-screen lg:grid-cols-2">
-      {/* Form side */}
       <div className="flex flex-col px-6 py-8 sm:px-10">
         <Logo />
         <div className="mx-auto flex w-full max-w-sm flex-1 flex-col justify-center py-12">
@@ -33,7 +22,7 @@ function SignIn() {
             className="mt-8 space-y-4"
             onSubmit={(e) => {
               e.preventDefault();
-              navigate({ to: "/app" });
+              navigate("/app");
             }}
           >
             <div className="space-y-1.5">
@@ -102,7 +91,6 @@ function SignIn() {
         </p>
       </div>
 
-      {/* Brand side */}
       <div className="relative hidden flex-col justify-between overflow-hidden bg-primary p-12 text-primary-foreground lg:flex">
         <div className="relative z-10">
           <p className="text-sm font-medium opacity-90">ZawariFlow</p>

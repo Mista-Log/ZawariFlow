@@ -1,20 +1,10 @@
-import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { ArrowRight, CheckCircle2, Eye, EyeOff } from "lucide-react";
 import { Logo } from "@/components/brand";
 import { Button } from "@/components/ui/button";
 
-export const Route = createFileRoute("/auth/signup")({
-  head: () => ({
-    meta: [
-      { title: "Create account — ZawariFlow" },
-      { name: "description", content: "Create a ZawariFlow operator account and start routing supply chain payments." },
-    ],
-  }),
-  component: SignUp,
-});
-
-function SignUp() {
+export default function SignUp() {
   const navigate = useNavigate();
   const [showPwd, setShowPwd] = useState(false);
 
@@ -32,7 +22,7 @@ function SignUp() {
             className="mt-8 space-y-4"
             onSubmit={(e) => {
               e.preventDefault();
-              navigate({ to: "/app" });
+              navigate("/app");
             }}
           >
             <div className="grid grid-cols-2 gap-3">

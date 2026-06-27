@@ -1,17 +1,7 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { Link } from "react-router-dom";
 import { useState } from "react";
 import { Menu, X } from "lucide-react";
 import { Logo } from "@/components/brand";
-
-export const Route = createFileRoute("/docs")({
-  head: () => ({
-    meta: [
-      { title: "Documentation — ZawariFlow" },
-      { name: "description", content: "ZawariFlow API and product documentation: purchase orders, splits, virtual accounts, webhooks, and subscriptions." },
-    ],
-  }),
-  component: Docs,
-});
 
 const SECTIONS = [
   {
@@ -56,7 +46,7 @@ function Section({ id, title, children }: { id: string; title: string; children:
   );
 }
 
-function Docs() {
+export default function Docs() {
   const [open, setOpen] = useState(false);
 
   return (
