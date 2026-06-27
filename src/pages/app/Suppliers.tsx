@@ -1,11 +1,6 @@
-import { createFileRoute } from "@tanstack/react-router";
 import { Plus } from "lucide-react";
 import { PageHeader } from "@/components/page-header";
 import { Button } from "@/components/ui/button";
-
-export const Route = createFileRoute("/app/suppliers")({
-  component: Suppliers,
-});
 
 const SUPPLIERS = [
   { name: "Hexa Steel Factory", category: "Goods", country: "NG", account: "VA-30412", volume: "412.8M", status: "Verified" },
@@ -25,7 +20,7 @@ function badge(s: string) {
   }
 }
 
-function Suppliers() {
+export default function Suppliers() {
   return (
     <>
       <PageHeader
@@ -34,7 +29,7 @@ function Suppliers() {
         actions={<Button size="sm"><Plus className="mr-1.5 h-4 w-4" /> Add supplier</Button>}
       />
 
-      <div className="grid gap-4 md:grid-cols-3">
+      <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
         {SUPPLIERS.map((s) => (
           <div key={s.name} className="rounded-xl border border-border bg-card p-5">
             <div className="flex items-start justify-between">

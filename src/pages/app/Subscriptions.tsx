@@ -1,11 +1,6 @@
-import { createFileRoute } from "@tanstack/react-router";
 import { Plus } from "lucide-react";
 import { PageHeader } from "@/components/page-header";
 import { Button } from "@/components/ui/button";
-
-export const Route = createFileRoute("/app/subscriptions")({
-  component: Subscriptions,
-});
 
 const SUBS = [
   { id: "SUB-1182", customer: "Bluepine Ltd", plan: "Enterprise — Monthly", amount: "4,500,000", next: "Jul 24", status: "Active" },
@@ -24,7 +19,7 @@ function badge(s: string) {
   }
 }
 
-function Subscriptions() {
+export default function Subscriptions() {
   return (
     <>
       <PageHeader
@@ -33,7 +28,7 @@ function Subscriptions() {
         actions={<Button size="sm"><Plus className="mr-1.5 h-4 w-4" /> New subscription</Button>}
       />
 
-      <div className="overflow-hidden rounded-xl border border-border bg-card">
+      <div className="overflow-x-auto rounded-xl border border-border bg-card">
         <table className="w-full text-sm">
           <thead className="border-b border-border bg-secondary/50 text-xs uppercase tracking-wider text-muted-foreground">
             <tr>

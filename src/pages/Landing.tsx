@@ -1,24 +1,13 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { Link } from "react-router-dom";
 import { ArrowRight, Boxes, Split, Wallet, Repeat, Shield, Code2, CheckCircle2 } from "lucide-react";
 import { MarketingNav, MarketingFooter } from "@/components/marketing-nav";
 import { Button } from "@/components/ui/button";
 
-export const Route = createFileRoute("/")({
-  head: () => ({
-    meta: [
-      { title: "ZawariFlow — B2B Supply Chain Payments" },
-      { name: "description", content: "API-first middleware for mapping bulk POs to multiple suppliers with automated split settlements, virtual account routing, and corporate subscriptions." },
-    ],
-  }),
-  component: Landing,
-});
-
-function Landing() {
+export default function Landing() {
   return (
     <div className="min-h-screen bg-background">
       <MarketingNav />
 
-      {/* Hero */}
       <section className="border-b border-border">
         <div className="mx-auto grid max-w-7xl gap-12 px-6 py-20 md:grid-cols-2 md:py-28">
           <div className="flex flex-col justify-center">
@@ -50,7 +39,6 @@ function Landing() {
             </div>
           </div>
 
-          {/* Visual: PO → splits diagram */}
           <div className="relative">
             <div className="rounded-xl border border-border bg-card p-6 shadow-sm">
               <div className="mb-4 flex items-center justify-between">
@@ -88,7 +76,6 @@ function Landing() {
         </div>
       </section>
 
-      {/* Features */}
       <section id="product" className="border-b border-border">
         <div className="mx-auto max-w-7xl px-6 py-20">
           <div className="max-w-2xl">
@@ -116,7 +103,6 @@ function Landing() {
         </div>
       </section>
 
-      {/* How it works */}
       <section id="how" className="border-b border-border bg-secondary/30">
         <div className="mx-auto max-w-7xl px-6 py-20">
           <h2 className="text-3xl font-semibold tracking-tight">How a payment flows</h2>
@@ -138,7 +124,6 @@ function Landing() {
         </div>
       </section>
 
-      {/* API teaser */}
       <section className="border-b border-border">
         <div className="mx-auto grid max-w-7xl gap-12 px-6 py-20 md:grid-cols-2 md:items-center">
           <div>
@@ -178,7 +163,6 @@ function Landing() {
         </div>
       </section>
 
-      {/* Pricing */}
       <section id="pricing">
         <div className="mx-auto max-w-7xl px-6 py-20">
           <div className="mb-12 max-w-2xl">

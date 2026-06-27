@@ -1,11 +1,6 @@
-import { createFileRoute } from "@tanstack/react-router";
 import { Plus, Copy } from "lucide-react";
 import { PageHeader } from "@/components/page-header";
 import { Button } from "@/components/ui/button";
-
-export const Route = createFileRoute("/app/virtual-accounts")({
-  component: VirtualAccounts,
-});
 
 const ACCOUNTS = [
   { id: "VA-30412", label: "Hexa Steel · Settlements", number: "9034 1280 41", bank: "Wema Bank", balance: "412,800,000", routed: "PO-* (factory leg)" },
@@ -14,7 +9,7 @@ const ACCOUNTS = [
   { id: "VA-30521", label: "Inflows · Northbridge Trading", number: "9034 1280 88", bank: "Wema Bank", balance: "0", routed: "PO inflow auto-route" },
 ];
 
-function VirtualAccounts() {
+export default function VirtualAccounts() {
   return (
     <>
       <PageHeader

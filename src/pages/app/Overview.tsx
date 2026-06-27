@@ -1,4 +1,4 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { Link } from "react-router-dom";
 import { ArrowUpRight, TrendingUp, TrendingDown, Plus } from "lucide-react";
 import {
   Area,
@@ -11,10 +11,6 @@ import {
 } from "recharts";
 import { PageHeader } from "@/components/page-header";
 import { Button } from "@/components/ui/button";
-
-export const Route = createFileRoute("/app/")({
-  component: Overview,
-});
 
 const VOLUME = [
   { d: "Mon", v: 92 },
@@ -55,7 +51,7 @@ function statusStyles(s: string) {
   }
 }
 
-function Overview() {
+export default function Overview() {
   return (
     <>
       <PageHeader

@@ -1,11 +1,6 @@
-import { createFileRoute } from "@tanstack/react-router";
 import { Plus, Filter, Download } from "lucide-react";
 import { PageHeader } from "@/components/page-header";
 import { Button } from "@/components/ui/button";
-
-export const Route = createFileRoute("/app/purchase-orders")({
-  component: PurchaseOrders,
-});
 
 const POS = [
   { id: "PO-48211", buyer: "Northbridge Trading", amount: "184,500,000", currency: "NGN", suppliers: 4, status: "Settled", created: "Jun 24" },
@@ -27,7 +22,7 @@ function badge(s: string) {
   }
 }
 
-function PurchaseOrders() {
+export default function PurchaseOrders() {
   return (
     <>
       <PageHeader
@@ -50,7 +45,7 @@ function PurchaseOrders() {
         </button>
       </div>
 
-      <div className="overflow-hidden rounded-xl border border-border bg-card">
+      <div className="overflow-x-auto rounded-xl border border-border bg-card">
         <table className="w-full text-sm">
           <thead className="border-b border-border bg-secondary/50 text-xs uppercase tracking-wider text-muted-foreground">
             <tr>
