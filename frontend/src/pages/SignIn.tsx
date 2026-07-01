@@ -3,10 +3,53 @@ import { useState } from "react";
 import { ArrowRight, Eye, EyeOff } from "lucide-react";
 import { Logo } from "@/components/brand";
 import { Button } from "@/components/ui/button";
+import { signin } from "@/api/auth";
 
 export default function SignIn() {
   const navigate = useNavigate();
   const [showPwd, setShowPwd] = useState(false);
+
+  const [formData, setFormData] = useState({
+    email: "",
+    password: "",
+  });
+
+  const [loading, setLoading] = useState(false);
+
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    setFormData((prev) => ({
+      ...prev,
+      [e.target.id]: e.target.value,
+    }));
+  };
+
+
+
+  const handleSubmit = async (
+    e: React.FormEvent<HTMLFormElement>
+  ) => {
+    e.preventDefault();
+
+    setLoading(true);
+
+    try {
+      const response = await signin(formData);
+
+      // Save your JWT tokens
+      localStorage.setItem("access_token", response.access);
+      localStorage.setItem("refresh_token", response.refresh);
+
+      navigate("/app");
+    } catch (error) {
+      console.error(error);
+
+      alert("Invalid email or password.");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <div className="grid min-h-screen lg:grid-cols-2">
@@ -20,10 +63,7 @@ export default function SignIn() {
 
           <form
             className="mt-8 space-y-4"
-            onSubmit={(e) => {
-              e.preventDefault();
-              navigate("/app");
-            }}
+            onSubmit={handleSubmit}
           >
             <div className="space-y-1.5">
               <label htmlFor="email" className="text-sm font-medium">Work email</label>
@@ -31,6 +71,8 @@ export default function SignIn() {
                 id="email"
                 type="email"
                 required
+                value={formData.email}
+                onChange={handleChange}
                 placeholder="you@company.com"
                 className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm placeholder:text-muted-foreground focus:border-ring focus:outline-none focus:ring-2 focus:ring-ring/20"
               />
@@ -46,6 +88,8 @@ export default function SignIn() {
                   id="password"
                   type={showPwd ? "text" : "password"}
                   required
+                  value={formData.password}
+                  onChange={handleChange}
                   placeholder="••••••••"
                   className="w-full rounded-md border border-input bg-background px-3 py-2 pr-10 text-sm placeholder:text-muted-foreground focus:border-ring focus:outline-none focus:ring-2 focus:ring-ring/20"
                 />

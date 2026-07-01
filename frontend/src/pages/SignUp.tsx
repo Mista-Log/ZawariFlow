@@ -3,10 +3,48 @@ import { useState } from "react";
 import { ArrowRight, CheckCircle2, Eye, EyeOff } from "lucide-react";
 import { Logo } from "@/components/brand";
 import { Button } from "@/components/ui/button";
+import { signup } from "@/api/auth";
 
 export default function SignUp() {
   const navigate = useNavigate();
   const [showPwd, setShowPwd] = useState(false);
+
+  const [formData, setFormData] = useState({
+    first_name: "",
+    last_name: "",
+    email: "",
+    password: "",
+  });
+
+  const [loading, setLoading] = useState(false);
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setFormData((prev) => ({
+      ...prev,
+      [e.target.id]: e.target.value,
+    }));
+  };
+
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+
+    setLoading(true);
+
+    try {
+      const data = await signup(formData);
+
+      console.log(data);
+
+      navigate("/app");
+    } catch (error) {
+      if (error instanceof Error) {
+        console.error(error.message);
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <div className="grid min-h-screen lg:grid-cols-2">
@@ -20,39 +58,31 @@ export default function SignUp() {
 
           <form
             className="mt-8 space-y-4"
-            onSubmit={(e) => {
-              e.preventDefault();
-              navigate("/app");
-            }}
+            onSubmit={handleSubmit}
           >
             <div className="grid grid-cols-2 gap-3">
               <div className="space-y-1.5">
-                <label htmlFor="first" className="text-sm font-medium">First name</label>
+                <label htmlFor="first_name" className="text-sm font-medium">First name</label>
                 <input
-                  id="first"
+                  id="first_name"
                   required
                   className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm focus:border-ring focus:outline-none focus:ring-2 focus:ring-ring/20"
+                  value={formData.first_name}
+                  onChange={handleChange}
                 />
               </div>
               <div className="space-y-1.5">
-                <label htmlFor="last" className="text-sm font-medium">Last name</label>
+                <label htmlFor="last_name" className="text-sm font-medium">Last name</label>
                 <input
-                  id="last"
+                  id="last_name"
                   required
                   className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm focus:border-ring focus:outline-none focus:ring-2 focus:ring-ring/20"
+                  value={formData.last_name}
+                  onChange={handleChange}
                 />
               </div>
             </div>
 
-            <div className="space-y-1.5">
-              <label htmlFor="company" className="text-sm font-medium">Company</label>
-              <input
-                id="company"
-                required
-                placeholder="Acme Trading Ltd"
-                className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm placeholder:text-muted-foreground focus:border-ring focus:outline-none focus:ring-2 focus:ring-ring/20"
-              />
-            </div>
 
             <div className="space-y-1.5">
               <label htmlFor="email" className="text-sm font-medium">Work email</label>
@@ -62,6 +92,8 @@ export default function SignUp() {
                 required
                 placeholder="you@company.com"
                 className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm placeholder:text-muted-foreground focus:border-ring focus:outline-none focus:ring-2 focus:ring-ring/20"
+                value={formData.email}
+                onChange={handleChange}
               />
             </div>
 
@@ -71,6 +103,8 @@ export default function SignUp() {
                 <input
                   id="password"
                   type={showPwd ? "text" : "password"}
+                  value={formData.password}
+                  onChange={handleChange}
                   required
                   minLength={8}
                   placeholder="At least 8 characters"
