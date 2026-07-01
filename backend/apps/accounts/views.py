@@ -12,6 +12,14 @@ from drf_spectacular.utils import (
 from .serializers import SignupSerializer
 from .serializers import SigninSerializer
 
+from rest_framework.permissions import IsAuthenticated
+
+from .serializers import (
+    UpdateProfileSerializer,
+    UserProfileSerializer,
+    UpdateProfileResponseSerializer,
+)
+
 
 @extend_schema(
     tags=["Authentication"],
@@ -77,3 +85,53 @@ class SigninView(APIView):
         serializer.is_valid(raise_exception=True)
 
         return Response(serializer.validated_data)
+    
+
+
+
+class UpdateProfileView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    @extend_schema(
+        tags=["Authentication"],
+        summary="Complete or update profile",
+        description=(
+            "Update the authenticated user's profile and choose a business role."
+        ),
+        request=UpdateProfileSerializer,
+        responses={
+            200: UpdateProfileResponseSerializer,
+            400: OpenApiResponse(description="Validation error"),
+            401: OpenApiResponse(description="Unauthorized"),
+        },
+        examples=[
+            OpenApiExample(
+                "Owner",
+                request_only=True,
+                value={
+                    "first_name": "Ibrahim",
+                    "last_name": "Oloyede",
+                    "company": "ATC Africa",
+                    "role": "OWNER",
+                },
+            ),
+        ],
+    )
+    def patch(self, request):
+        serializer = UpdateProfileSerializer(
+            request.user,
+            data=request.data,
+            partial=True,
+        )
+
+        serializer.is_valid(raise_exception=True)
+
+        user = serializer.save()
+
+        return Response(
+            {
+                "message": "Profile updated successfully.",
+                "data": UserProfileSerializer(user).data,
+            },
+            status=status.HTTP_200_OK,
+        )

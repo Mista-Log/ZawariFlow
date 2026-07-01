@@ -1,6 +1,6 @@
 from django.urls import path
 
-from .views import SignupView
+from .views import SignupView, UpdateProfileView
 from .views import SigninView
 
 urlpatterns = [
@@ -14,4 +14,8 @@ urlpatterns = [
         SigninView.as_view(),
         name="signin",
     ),
-]
+    path(
+        "profile/",
+        UpdateProfileView.as_view(),
+        name="update-profile",
+    ),]
