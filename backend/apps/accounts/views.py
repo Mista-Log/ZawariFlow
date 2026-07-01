@@ -135,3 +135,24 @@ class UpdateProfileView(APIView):
             },
             status=status.HTTP_200_OK,
         )
+    
+
+
+
+class UserProfileView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    @extend_schema(
+        tags=["Authentication"],
+        summary="Get authenticated user profile",
+        responses={200: UserProfileSerializer},
+    )
+    def get(self, request):
+        serializer = UserProfileSerializer(request.user)
+
+        return Response(
+            {
+                "message": "Profile retrieved successfully.",
+                "data": serializer.data,
+            }
+        )

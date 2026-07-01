@@ -74,7 +74,26 @@ class SigninSerializer(serializers.Serializer):
 
 
 
+class CompanySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Company
+        fields = (
+            "id",
+            "name",
+            "registration_number",
+            "tax_identification_number",
+            "industry",
+            "country",
+            "address",
+            "phone_number",
+            "website",
+            "created_at",
+        )
+
+
 class UserProfileSerializer(serializers.ModelSerializer):
+    company = CompanySerializer(read_only=True)
+
     class Meta:
         model = User
         fields = (
@@ -83,9 +102,10 @@ class UserProfileSerializer(serializers.ModelSerializer):
             "last_name",
             "email",
             "role",
-            "company",
             "phone_number",
             "profile_completed",
+            "company",
+            "created_at",
         )
 
 
