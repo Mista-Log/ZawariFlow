@@ -4,10 +4,12 @@ import { ArrowRight, Eye, EyeOff } from "lucide-react";
 import { Logo } from "@/components/brand";
 import { Button } from "@/components/ui/button";
 import { signin } from "@/api/auth";
+import { useAuth } from "@/contexts/AuthContext";
 
 export default function SignIn() {
   const navigate = useNavigate();
   const [showPwd, setShowPwd] = useState(false);
+  const { refreshUser } = useAuth();
 
   const [formData, setFormData] = useState({
     email: "",
@@ -41,6 +43,9 @@ export default function SignIn() {
       localStorage.setItem("access_token", response.access);
       localStorage.setItem("refresh_token", response.refresh);
 
+
+      await refreshUser();
+      
       navigate("/app");
     } catch (error) {
       console.error(error);
