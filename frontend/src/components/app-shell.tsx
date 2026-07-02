@@ -15,6 +15,10 @@ import {
 } from "lucide-react";
 import { Logo } from "./brand";
 
+import { LogOut } from "lucide-react";
+import { useAuth } from "@/contexts/AuthContext";
+
+
 const NAV: Array<{ to: string; label: string; icon: typeof LayoutDashboard; exact?: boolean }> = [
   { to: "/app", label: "Overview", icon: LayoutDashboard, exact: true },
   { to: "/app/purchase-orders", label: "Purchase Orders", icon: FileText },
@@ -25,6 +29,12 @@ const NAV: Array<{ to: string; label: string; icon: typeof LayoutDashboard; exac
 ];
 
 function SidebarContent({ pathname, onNavigate }: { pathname: string; onNavigate?: () => void }) {
+
+  const { user, logout } = useAuth();
+
+  const initials =
+    `${user?.first_name?.[0] ?? ""}${user?.last_name?.[0] ?? ""}`;
+  
   return (
     <>
       <div className="flex h-16 shrink-0 items-center border-b border-sidebar-border px-5">
@@ -62,14 +72,29 @@ function SidebarContent({ pathname, onNavigate }: { pathname: string; onNavigate
         </Link>
       </nav>
       <div className="border-t border-sidebar-border p-4">
-        <div className="flex items-center gap-3">
-          <div className="grid h-8 w-8 shrink-0 place-items-center rounded-full bg-primary/10 text-xs font-semibold text-primary">
-            AO
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div className="grid h-8 w-8 place-items-center rounded-full bg-primary/10 text-xs font-semibold text-primary">
+              {initials}
+            </div>
+
+            <div className="min-w-0">
+              <p className="truncate text-sm font-medium">
+                {user?.first_name} {user?.last_name}
+              </p>
+
+              <p className="truncate text-xs text-muted-foreground">
+                {user?.business_name ?? user?.email}
+              </p>
+            </div>
           </div>
-          <div className="min-w-0">
-            <p className="truncate text-sm font-medium">Adaeze O.</p>
-            <p className="truncate text-xs text-muted-foreground">Operator · Demo Co.</p>
-          </div>
+
+          <button
+            onClick={logout}
+            className="rounded-md p-2 hover:bg-accent"
+          >
+            <LogOut className="h-4 w-4" />
+          </button>
         </div>
       </div>
     </>

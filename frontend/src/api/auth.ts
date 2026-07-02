@@ -25,3 +25,9 @@ export const signin = async (data: SigninPayload) => {
     body: data,
   });
 }
+
+export const getProfile = async () => {
+  return apiRequest("/api/auth/profile/me", {
+    method: "GET",
+  });
+};
