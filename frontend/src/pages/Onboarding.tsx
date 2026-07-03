@@ -79,40 +79,46 @@ const handleContinue = async () => {
     await submitProfile();
     };
 
-const submitProfile = async () => {
-    setLoading(true);
 
-    try {
-        const payload: any = {
-          role: formData.role,
-        };
+    const submitProfile = async (
+        e?: React.FormEvent<HTMLFormElement>
+    ) => {
+        e?.preventDefault();
 
-        if (formData.role === "OWNER") {
-          Object.assign(payload, {
-            company_name: formData.company_name,
-            registration_number: formData.registration_number,
-            tax_identification_number: formData.tax_identification_number,
-            industry: formData.industry,
-            country: formData.country,
-            address: formData.address,
-            phone_number: formData.phone_number,
-            website: formData.website,
-          });
+        setLoading(true);
+
+        try {
+            const payload: any = {
+              role: formData.role,
+            };
+
+            if (formData.role === "OWNER") {
+              Object.assign(payload, {
+                company_name: formData.company_name,
+                registration_number: formData.registration_number,
+                tax_identification_number: formData.tax_identification_number,
+                industry: formData.industry,
+                country: formData.country,
+                address: formData.address,
+                phone_number: formData.phone_number,
+                website: formData.website,
+              });
+            }
+
+            await updateProfile(payload);
+            console.log(formData)
+
+            await refreshUser();
+
+            navigate("/app");
+        } catch (error) {
+            console.error(error);
+            alert("Unable to complete your profile.");
+        } finally {
+            setLoading(false);
         }
-
-        await updateProfile(payload);
-        console.log(formData)
-
-        await refreshUser();
-
-        navigate("/app");
-    } catch (error) {
-        console.error(error);
-        alert("Unable to complete your profile.");
-    } finally {
-        setLoading(false);
-    }
     };
+  
 
   return (
     <div className="min-h-screen bg-muted/30">
