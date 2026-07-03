@@ -19,6 +19,7 @@ from .serializers import (
     UserProfileSerializer,
     UpdateProfileResponseSerializer,
 )
+from rest_framework.permissions import AllowAny
 
 
 @extend_schema(
@@ -42,7 +43,7 @@ Register a new user account.
     },
 )
 class SignupView(APIView):
-    permission_classes = []
+    permission_classes = [AllowAny]
 
     def post(self, request):
         serializer = SignupSerializer(data=request.data)
@@ -78,7 +79,7 @@ Returns JWT access and refresh tokens.
     },
 )
 class SigninView(APIView):
-    permission_classes = []
+    permission_classes = [AllowAny]
 
     def post(self, request):
         serializer = SigninSerializer(data=request.data)

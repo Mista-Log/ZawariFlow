@@ -3,6 +3,7 @@ import Landing from "./pages/Landing";
 import Docs from "./pages/Docs";
 import SignIn from "./pages/SignIn";
 import SignUp from "./pages/SignUp";
+import CompleteProfile from "./pages/Onboarding";
 import { AppShell } from "./components/app-shell";
 import Overview from "./pages/app/Overview";
 import PurchaseOrders from "./pages/app/PurchaseOrders";
@@ -19,6 +20,7 @@ export default function App() {
       <Route path="/docs" element={<Docs />} />
       <Route path="/auth/signin" element={<SignIn />} />
       <Route path="/auth/signup" element={<SignUp />} />
+      <Route path="/onboarding" element={<CompleteProfile />} />
       <Route path="/app" element={<AppShell />}>
         <Route index element={<Overview />} />
         <Route path="purchase-orders" element={<PurchaseOrders />} />

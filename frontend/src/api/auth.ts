@@ -12,6 +12,19 @@ export interface SigninPayload {
   password: string;
 }
 
+export interface UpdateProfilePayload {
+  role: string;
+
+  company_name?: string;
+  registration_number?: string;
+  tax_identification_number?: string;
+  industry?: string;
+  country?: string;
+  address?: string;
+  phone_number?: string;
+  website?: string;
+}
+
 export async function signup(data: SignupPayload) {
   return apiRequest("/api/auth/signup/", {
     method: "POST",
@@ -29,5 +42,12 @@ export const signin = async (data: SigninPayload) => {
 export const getProfile = async () => {
   return apiRequest("/api/auth/profile/me", {
     method: "GET",
+  });
+};
+
+export const updateProfile = async (data: UpdateProfilePayload) => {
+  return apiRequest("/api/auth/profile/", {
+    method: "PATCH",
+    body: data,
   });
 };
