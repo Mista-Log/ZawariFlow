@@ -1,9 +1,8 @@
 #!/usr/bin/env bash
+set -e
 
-set -o errexit
+cd backend
 
 uv sync
-
-python manage.py collectstatic --no-input
-
-python manage.py migrate
+uv run python manage.py collectstatic --no-input
+uv run python manage.py migrate
