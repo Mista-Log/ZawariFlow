@@ -92,8 +92,10 @@ class CompanySerializer(serializers.ModelSerializer):
 
 
 class UserProfileSerializer(serializers.ModelSerializer):
-    company = CompanySerializer(read_only=True)
-
+    company = CompanySerializer(
+        source="owned_company",
+        read_only=True,
+    )
     class Meta:
         model = User
         fields = (
@@ -144,7 +146,7 @@ class UpdateProfileSerializer(serializers.ModelSerializer):
 
         if role == UserRole.OWNER:
             required_fields = [
-                "company_name",-
+                "company_name",
                 "registration_number",
                 "industry",
                 "country",
@@ -179,22 +181,22 @@ class UpdateProfileSerializer(serializers.ModelSerializer):
         instance.role = role
 
         if role == UserRole.OWNER:
-            company = Company.objects.create(
-                name=validated_data.pop("company_name"),
-                registration_number=validated_data.pop("registration_number"),
-                tax_identification_number=validated_data.pop(
-                    "tax_identification_number",
-                    "",
-                ),
-                industry=validated_data.pop("industry"),
-                country=validated_data.pop("country"),
-                address=validated_data.pop("address"),
-                phone_number=validated_data.pop("phone_number"),
-                website=validated_data.pop("website", ""),
+            Company.objects.update_or_create(
                 owner=instance,
+                defaults={
+                    "name": validated_data.pop("company_name"),
+                    "registration_number": validated_data.pop("registration_number"),
+                    "tax_identification_number": validated_data.pop(
+                        "tax_identification_number",
+                        "",
+                    ),
+                    "industry": validated_data.pop("industry"),
+                    "country": validated_data.pop("country"),
+                    "address": validated_data.pop("address"),
+                    "phone_number": validated_data.pop("phone_number"),
+                    "website": validated_data.pop("website", ""),
+                },
             )
-
-            instance.company = company
 
         instance.profile_completed = True
         instance.save()
