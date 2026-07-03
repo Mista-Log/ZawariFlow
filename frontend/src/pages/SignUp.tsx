@@ -3,11 +3,14 @@ import { useState } from "react";
 import { ArrowRight, CheckCircle2, Eye, EyeOff } from "lucide-react";
 import { Logo } from "@/components/brand";
 import { Button } from "@/components/ui/button";
-import { signup } from "@/api/auth";
+import { signin, signup } from "@/api/auth";
+import { useAuth } from "@/contexts/AuthContext";
 
 export default function SignUp() {
   const navigate = useNavigate();
   const [showPwd, setShowPwd] = useState(false);
+  const { refreshUser } = useAuth();
+
 
   const [formData, setFormData] = useState({
     first_name: "",
@@ -35,8 +38,17 @@ export default function SignUp() {
       const data = await signup(formData);
 
       console.log(data);
+      const loginResponse = await signin({
+          email: formData.email,
+          password: formData.password,
+      });
 
-      navigate("/app");
+      localStorage.setItem("access_token", loginResponse.access);
+      localStorage.setItem("refresh_token", loginResponse.refresh);
+
+      await refreshUser();
+
+      navigate("/onboarding");
     } catch (error) {
       if (error instanceof Error) {
         console.error(error.message);

@@ -144,7 +144,7 @@ class UpdateProfileSerializer(serializers.ModelSerializer):
 
         if role == UserRole.OWNER:
             required_fields = [
-                "company_name",
+                "company_name",-
                 "registration_number",
                 "industry",
                 "country",
@@ -164,7 +164,7 @@ class UpdateProfileSerializer(serializers.ModelSerializer):
         return attrs
     
     def update(self, instance, validated_data):
-        role = validated_data.pop("role")
+        role = validated_data.pop("role", instance.role)
 
         instance.first_name = validated_data.get(
             "first_name",

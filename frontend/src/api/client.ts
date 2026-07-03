@@ -27,7 +27,8 @@ export async function apiRequest(
   const data = await response.json();
 
   if (!response.ok) {
-    throw new Error(data.message || "Something went wrong");
+    console.error(data);
+    throw new Error(JSON.stringify(data));
   }
 
   return data;
