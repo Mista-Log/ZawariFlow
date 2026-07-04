@@ -12,23 +12,31 @@ import Settlements from "./pages/app/Settlements";
 import VirtualAccounts from "./pages/app/VirtualAccounts";
 import Subscriptions from "./pages/app/Subscriptions";
 import NotFound from "./pages/NotFound";
+import ProtectedRoute from "./components/ProtectedRoute";
 
 export default function App() {
   return (
     <Routes>
+      {/* Public Routes */}
       <Route path="/" element={<Landing />} />
       <Route path="/docs" element={<Docs />} />
       <Route path="/auth/signin" element={<SignIn />} />
       <Route path="/auth/signup" element={<SignUp />} />
-      <Route path="/onboarding" element={<CompleteProfile />} />
-      <Route path="/app" element={<AppShell />}>
-        <Route index element={<Overview />} />
-        <Route path="purchase-orders" element={<PurchaseOrders />} />
-        <Route path="suppliers" element={<Suppliers />} />
-        <Route path="settlements" element={<Settlements />} />
-        <Route path="virtual-accounts" element={<VirtualAccounts />} />
-        <Route path="subscriptions" element={<Subscriptions />} />
+
+      {/* Protected Routes */}
+      <Route element={<ProtectedRoute />}>
+        <Route path="/onboarding" element={<CompleteProfile />} />
+
+        <Route path="/app" element={<AppShell />}>
+          <Route index element={<Overview />} />
+          <Route path="purchase-orders" element={<PurchaseOrders />} />
+          <Route path="suppliers" element={<Suppliers />} />
+          <Route path="settlements" element={<Settlements />} />
+          <Route path="virtual-accounts" element={<VirtualAccounts />} />
+          <Route path="subscriptions" element={<Subscriptions />} />
+        </Route>
       </Route>
+
       <Route path="/404" element={<NotFound />} />
       <Route path="*" element={<NotFound />} />
     </Routes>
