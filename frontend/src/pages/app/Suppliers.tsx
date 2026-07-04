@@ -332,51 +332,66 @@ export default function Suppliers() {
       />
 
       <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-        {suppliers.map((s) => (
-          <div key={s.id} className="rounded-xl border border-border bg-card p-5">
-            <div className="flex items-start justify-between">
-              <div className="flex items-center gap-3">
-                <div className="grid h-10 w-10 place-items-center rounded-md bg-primary/10 text-sm font-semibold text-primary">
-                  {s.name
-                    .split(" ")
-                    .map((word) => word[0])
-                    .slice(0, 2)
-                    .join("")}
+        {loading ? (
+          <div className="col-span-full text-center py-10">
+            Loading suppliers...
+          </div>
+        ) : suppliers.length === 0 ? (
+          <div className="col-span-full text-center py-10">
+            <h3 className="text-lg font-semibold">No suppliers available</h3>
+            <p className="text-sm text-muted-foreground">
+              Click <strong>Add Supplier</strong> to create your first supplier.
+            </p>
+          </div>
+        ) : (
+          suppliers.map((s) => (
+            <div
+              key={s.id}
+              className="rounded-xl border border-border bg-card p-5"
+            >
+              <div className="flex items-start justify-between">
+                <div className="flex items-center gap-3">
+                  <div className="grid h-10 w-10 place-items-center rounded-md bg-primary/10 text-sm font-semibold text-primary">
+                    {s.name
+                      .split(" ")
+                      .map((w) => w[0])
+                      .slice(0, 2)
+                      .join("")}
+                  </div>
+
+                  <div className="min-w-0">
+                    <p className="truncate font-medium">{s.name}</p>
+                    <p className="text-xs text-muted-foreground">
+                      {s.category} · {s.country}
+                    </p>
+                  </div>
                 </div>
 
-                <div className="min-w-0">
-                  <p className="truncate font-medium">{s.name}</p>
+                <span
+                  className={`rounded-full px-2 py-0.5 text-xs font-medium ${badge(
+                    s.status
+                  )}`}
+                >
+                  {s.status}
+                </span>
+              </div>
 
-                  <p className="text-xs text-muted-foreground">
-                    {s.category} · {s.country}
+              <div className="mt-5 grid grid-cols-2 gap-3 border-t border-border pt-4 text-xs">
+                <div>
+                  <p className="text-muted-foreground">Account Number</p>
+                  <p className="mt-0.5 font-mono">{s.account_number}</p>
+                </div>
+
+                <div className="text-right">
+                  <p className="text-muted-foreground">Transaction Volume</p>
+                  <p className="mt-0.5 font-mono">
+                    ₦ {Number(s.transaction_volume).toLocaleString()}
                   </p>
                 </div>
               </div>
-
-              <span
-                className={`rounded-full px-2 py-0.5 text-xs font-medium ${badge(
-                  s.status
-                )}`}
-              >
-                {s.status}
-              </span>
             </div>
-
-            <div className="mt-5 grid grid-cols-2 gap-3 border-t border-border pt-4 text-xs">
-              <div>
-                <p className="text-muted-foreground">Account Number</p>
-                <p className="mt-0.5 font-mono">{s.account_number}</p>
-              </div>
-
-              <div className="text-right">
-                <p className="text-muted-foreground">Transaction Volume</p>
-                <p className="mt-0.5 font-mono">
-                  ₦ {Number(s.transaction_volume).toLocaleString()}
-                </p>
-              </div>
-            </div>
-          </div>
-        ))}
+          ))
+        )}
       </div>
     </>
   );
