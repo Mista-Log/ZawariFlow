@@ -1,6 +1,25 @@
+import { useState } from "react";
 import { Plus } from "lucide-react";
 import { PageHeader } from "@/components/page-header";
 import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 const SUBS = [
   { id: "SUB-1182", customer: "Bluepine Ltd", plan: "Enterprise — Monthly", amount: "4,500,000", next: "Jul 24", status: "Active" },
@@ -19,13 +38,78 @@ function badge(s: string) {
   }
 }
 
+function NewSubscriptionDialog() {
+  const [open, setOpen] = useState(false);
+  const onSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    setOpen(false);
+  };
+  return (
+    <Dialog open={open} onOpenChange={setOpen}>
+      <DialogTrigger asChild>
+        <Button size="sm"><Plus className="mr-1.5 h-4 w-4" /> New subscription</Button>
+      </DialogTrigger>
+      <DialogContent className="sm:max-w-lg">
+        <DialogHeader>
+          <DialogTitle>New subscription</DialogTitle>
+          <DialogDescription>Set up a recurring B2B contract with mandate-based collection.</DialogDescription>
+        </DialogHeader>
+        <form onSubmit={onSubmit} className="space-y-4">
+          <div className="space-y-2">
+            <Label htmlFor="sub-cust">Customer</Label>
+            <Input id="sub-cust" placeholder="e.g. Bluepine Ltd" required />
+          </div>
+          <div className="grid grid-cols-2 gap-3">
+            <div className="space-y-2">
+              <Label htmlFor="sub-plan">Plan</Label>
+              <Select defaultValue="Enterprise">
+                <SelectTrigger id="sub-plan"><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="Growth">Growth</SelectItem>
+                  <SelectItem value="Enterprise">Enterprise</SelectItem>
+                  <SelectItem value="Custom">Custom</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="sub-cycle">Billing cycle</Label>
+              <Select defaultValue="Monthly">
+                <SelectTrigger id="sub-cycle"><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="Monthly">Monthly</SelectItem>
+                  <SelectItem value="Quarterly">Quarterly</SelectItem>
+                  <SelectItem value="Annual">Annual</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+          <div className="grid grid-cols-2 gap-3">
+            <div className="space-y-2">
+              <Label htmlFor="sub-amount">Amount (₦)</Label>
+              <Input id="sub-amount" type="number" placeholder="0.00" required />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="sub-start">Start date</Label>
+              <Input id="sub-start" type="date" required />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button type="button" variant="outline" onClick={() => setOpen(false)}>Cancel</Button>
+            <Button type="submit">Create subscription</Button>
+          </DialogFooter>
+        </form>
+      </DialogContent>
+    </Dialog>
+  );
+}
+
 export default function Subscriptions() {
   return (
     <>
       <PageHeader
         title="Corporate subscriptions"
         description="Recurring B2B contracts with mandate-based collection."
-        actions={<Button size="sm"><Plus className="mr-1.5 h-4 w-4" /> New subscription</Button>}
+        actions={<NewSubscriptionDialog />}
       />
 
       <div className="overflow-x-auto rounded-xl border border-border bg-card">

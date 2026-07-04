@@ -110,6 +110,12 @@ class Supplier(models.Model):
         default=0,
     )
 
+    bank_name = models.CharField(
+        max_length=100,
+        blank=True,
+        null=True,
+    )
+
     status = models.CharField(
         max_length=30,
         choices=SupplierStatus.choices,
