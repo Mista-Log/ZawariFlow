@@ -1,6 +1,25 @@
+import { useState } from "react";
 import { Plus, Copy } from "lucide-react";
 import { PageHeader } from "@/components/page-header";
 import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 const ACCOUNTS = [
   { id: "VA-30412", label: "Hexa Steel · Settlements", number: "9034 1280 41", bank: "Wema Bank", balance: "412,800,000", routed: "PO-* (factory leg)" },
@@ -9,13 +28,76 @@ const ACCOUNTS = [
   { id: "VA-30521", label: "Inflows · Northbridge Trading", number: "9034 1280 88", bank: "Wema Bank", balance: "0", routed: "PO inflow auto-route" },
 ];
 
+function IssueAccountDialog() {
+  const [open, setOpen] = useState(false);
+  const onSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    setOpen(false);
+  };
+  return (
+    <Dialog open={open} onOpenChange={setOpen}>
+      <DialogTrigger asChild>
+        <Button size="sm"><Plus className="mr-1.5 h-4 w-4" /> Issue account</Button>
+      </DialogTrigger>
+      <DialogContent className="sm:max-w-lg">
+        <DialogHeader>
+          <DialogTitle>Issue virtual account</DialogTitle>
+          <DialogDescription>Create a per-counterparty account that auto-routes inflows.</DialogDescription>
+        </DialogHeader>
+        <form onSubmit={onSubmit} className="space-y-4">
+          <div className="space-y-2">
+            <Label htmlFor="va-label">Account label</Label>
+            <Input id="va-label" placeholder="e.g. Hexa Steel · Settlements" required />
+          </div>
+          <div className="grid grid-cols-2 gap-3">
+            <div className="space-y-2">
+              <Label htmlFor="va-party">Counterparty</Label>
+              <Input id="va-party" placeholder="Supplier / buyer name" required />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="va-bank">Bank</Label>
+              <Select defaultValue="Wema Bank">
+                <SelectTrigger id="va-bank"><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="Wema Bank">Wema Bank</SelectItem>
+                  <SelectItem value="Providus">Providus</SelectItem>
+                  <SelectItem value="Sterling">Sterling</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="va-rule">Routing rule</Label>
+            <Input id="va-rule" placeholder="e.g. PO-* (factory leg)" />
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="va-currency">Currency</Label>
+            <Select defaultValue="NGN">
+              <SelectTrigger id="va-currency"><SelectValue /></SelectTrigger>
+              <SelectContent>
+                <SelectItem value="NGN">NGN</SelectItem>
+                <SelectItem value="USD">USD</SelectItem>
+                <SelectItem value="EUR">EUR</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+          <DialogFooter>
+            <Button type="button" variant="outline" onClick={() => setOpen(false)}>Cancel</Button>
+            <Button type="submit">Issue account</Button>
+          </DialogFooter>
+        </form>
+      </DialogContent>
+    </Dialog>
+  );
+}
+
 export default function VirtualAccounts() {
   return (
     <>
       <PageHeader
         title="Virtual accounts"
         description="Per-counterparty accounts that automatically route inflows to the right ledger."
-        actions={<Button size="sm"><Plus className="mr-1.5 h-4 w-4" /> Issue account</Button>}
+        actions={<IssueAccountDialog />}
       />
 
       <div className="grid gap-4 md:grid-cols-2">

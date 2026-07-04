@@ -1,6 +1,26 @@
+import { useState } from "react";
 import { Plus, Filter, Download } from "lucide-react";
 import { PageHeader } from "@/components/page-header";
 import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 const POS = [
   { id: "PO-48211", buyer: "Northbridge Trading", amount: "184,500,000", currency: "NGN", suppliers: 4, status: "Settled", created: "Jun 24" },
@@ -22,6 +42,62 @@ function badge(s: string) {
   }
 }
 
+function NewPODialog() {
+  const [open, setOpen] = useState(false);
+  const onSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    setOpen(false);
+  };
+  return (
+    <Dialog open={open} onOpenChange={setOpen}>
+      <DialogTrigger asChild>
+        <Button size="sm"><Plus className="mr-1.5 h-4 w-4" /> New PO</Button>
+      </DialogTrigger>
+      <DialogContent className="sm:max-w-lg">
+        <DialogHeader>
+          <DialogTitle>Create purchase order</DialogTitle>
+          <DialogDescription>Register a bulk inflow and map it to downstream suppliers.</DialogDescription>
+        </DialogHeader>
+        <form onSubmit={onSubmit} className="space-y-4">
+          <div className="space-y-2">
+            <Label htmlFor="po-buyer">Buyer</Label>
+            <Input id="po-buyer" placeholder="e.g. Northbridge Trading" required />
+          </div>
+          <div className="grid grid-cols-2 gap-3">
+            <div className="space-y-2">
+              <Label htmlFor="po-amount">Amount</Label>
+              <Input id="po-amount" type="number" placeholder="0.00" required />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="po-currency">Currency</Label>
+              <Select defaultValue="NGN">
+                <SelectTrigger id="po-currency"><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="NGN">NGN</SelectItem>
+                  <SelectItem value="USD">USD</SelectItem>
+                  <SelectItem value="EUR">EUR</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="po-suppliers">Suppliers (comma separated)</Label>
+            <Input id="po-suppliers" placeholder="Hexa Steel, BlueLane Logistics" />
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="po-notes">Notes</Label>
+            <Textarea id="po-notes" placeholder="Reference, delivery terms…" rows={3} />
+          </div>
+          <DialogFooter>
+            <Button type="button" variant="outline" onClick={() => setOpen(false)}>Cancel</Button>
+            <Button type="submit">Create PO</Button>
+          </DialogFooter>
+        </form>
+      </DialogContent>
+    </Dialog>
+  );
+}
+
 export default function PurchaseOrders() {
   return (
     <>
@@ -31,7 +107,7 @@ export default function PurchaseOrders() {
         actions={
           <>
             <Button variant="outline" size="sm"><Download className="mr-1.5 h-4 w-4" /> Export</Button>
-            <Button size="sm"><Plus className="mr-1.5 h-4 w-4" /> New PO</Button>
+            <NewPODialog />
           </>
         }
       />
