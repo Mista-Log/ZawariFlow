@@ -23,13 +23,60 @@ import {
 } from "@/components/ui/select";
 
 const POS = [
-  { id: "PO-48211", buyer: "Northbridge Trading", amount: "184,500,000", currency: "NGN", suppliers: 4, status: "Settled", created: "Jun 24" },
-  { id: "PO-48207", buyer: "Northbridge Trading", amount: "92,000,000", currency: "NGN", suppliers: 3, status: "Processing", created: "Jun 24" },
-  { id: "PO-48198", buyer: "Lekki Industrial Co.", amount: "61,200,000", currency: "NGN", suppliers: 5, status: "Pending", created: "Jun 23" },
-  { id: "PO-48190", buyer: "Apex Cement", amount: "240,000,000", currency: "NGN", suppliers: 6, status: "Settled", created: "Jun 23" },
-  { id: "PO-48184", buyer: "Sahel Foods Ltd", amount: "12,400,000", currency: "NGN", suppliers: 2, status: "Settled", created: "Jun 22" },
-  { id: "PO-48177", buyer: "Atlas Petroleum", amount: "320,000,000", currency: "NGN", suppliers: 4, status: "Failed", created: "Jun 22" },
-  { id: "PO-48169", buyer: "Bluepine Ltd", amount: "48,000,000", currency: "NGN", suppliers: 3, status: "Settled", created: "Jun 21" },
+  {
+    id: "PO-48211",
+    buyer: "Northbridge Trading",
+    amount: "184,500,000",
+    currency: "NGN",
+    suppliers: 4,
+    status: "Settled",
+    created: "Jun 24",
+    items: [
+      { name: "Rice", quantity: 500, unit: "Bags" },
+      { name: "Maize", quantity: 200, unit: "Bags" },
+      { name: "Fertilizer", quantity: 120, unit: "Tons" },
+    ],
+  },
+  {
+    id: "PO-48207",
+    buyer: "Northbridge Trading",
+    amount: "92,000,000",
+    currency: "NGN",
+    suppliers: 3,
+    status: "Processing",
+    created: "Jun 24",
+    items: [
+      { name: "Cocoa Beans", quantity: 75, unit: "Tons" },
+      { name: "Palm Oil", quantity: 400, unit: "Litres" },
+    ],
+  },
+  {
+    id: "PO-48198",
+    buyer: "Lekki Industrial Co.",
+    amount: "61,200,000",
+    currency: "NGN",
+    suppliers: 5,
+    status: "Pending",
+    created: "Jun 23",
+    items: [
+      { name: "Steel Rods", quantity: 800, unit: "Pieces" },
+      { name: "Cement", quantity: 1000, unit: "Bags" },
+      { name: "Sand", quantity: 30, unit: "Truckloads" },
+    ],
+  },
+  {
+    id: "PO-48190",
+    buyer: "Apex Cement",
+    amount: "240,000,000",
+    currency: "NGN",
+    suppliers: 6,
+    status: "Settled",
+    created: "Jun 23",
+    items: [
+      { name: "Clinker", quantity: 500, unit: "Tons" },
+      { name: "Gypsum", quantity: 180, unit: "Tons" },
+    ],
+  },
 ];
 
 function badge(s: string) {
@@ -43,7 +90,41 @@ function badge(s: string) {
 }
 
 function NewPODialog() {
+
+  const [items, setItems] = useState([
+    {
+      item: "",
+      quantity: "",
+      unit: "",
+    },
+  ]);
   const [open, setOpen] = useState(false);
+
+
+  const addItem = () => {
+    setItems([
+      ...items,
+      {
+        item: "",
+        quantity: "",
+        unit: "",
+      },
+    ]);
+  };
+
+  const updateItem = (
+    index: number,
+    field: "item" | "quantity" | "unit",
+    value: string
+  ) => {
+    const updated = [...items];
+    updated[index][field] = value;
+    setItems(updated);
+  };
+
+  const removeItem = (index: number) => {
+    setItems(items.filter((_, i) => i !== index));
+  };
   const onSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     setOpen(false);
@@ -53,7 +134,7 @@ function NewPODialog() {
       <DialogTrigger asChild>
         <Button size="sm"><Plus className="mr-1.5 h-4 w-4" /> New PO</Button>
       </DialogTrigger>
-      <DialogContent className="sm:max-w-lg">
+      <DialogContent className="sm:max-w-3xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>Create purchase order</DialogTitle>
           <DialogDescription>Register a bulk inflow and map it to downstream suppliers.</DialogDescription>
@@ -79,6 +160,77 @@ function NewPODialog() {
                 </SelectContent>
               </Select>
             </div>
+          </div>
+          <div className="space-y-4">
+            <div className="flex items-center justify-between">
+              <Label className="text-base">Purchase Items</Label>
+
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={addItem}
+              >
+                <Plus className="mr-2 h-4 w-4" />
+                Add Item
+              </Button>
+            </div>
+
+            {items.map((item, index) => (
+              <div
+                key={index}
+                className="rounded-lg border p-4 space-y-3"
+              >
+                <div className="grid grid-cols-3 gap-3">
+                  <div className="space-y-2">
+                    <Label>Item</Label>
+                    <Input
+                      placeholder="Rice"
+                      value={item.item}
+                      onChange={(e) =>
+                        updateItem(index, "item", e.target.value)
+                      }
+                    />
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label>Quantity</Label>
+                    <Input
+                      type="number"
+                      placeholder="500"
+                      value={item.quantity}
+                      onChange={(e) =>
+                        updateItem(index, "quantity", e.target.value)
+                      }
+                    />
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label>Unit</Label>
+                    <Input
+                      placeholder="Bags"
+                      value={item.unit}
+                      onChange={(e) =>
+                        updateItem(index, "unit", e.target.value)
+                      }
+                    />
+                  </div>
+                </div>
+
+                {items.length > 1 && (
+                  <div className="flex justify-end">
+                    <Button
+                      type="button"
+                      variant="destructive"
+                      size="sm"
+                      onClick={() => removeItem(index)}
+                    >
+                      Remove Item
+                    </Button>
+                  </div>
+                )}
+              </div>
+            ))}
           </div>
           <div className="space-y-2">
             <Label htmlFor="po-suppliers">Suppliers (comma separated)</Label>
@@ -127,6 +279,7 @@ export default function PurchaseOrders() {
             <tr>
               <th className="px-5 py-3 text-left font-medium">PO ID</th>
               <th className="px-5 py-3 text-left font-medium">Buyer</th>
+              <th className="px-5 py-3 text-left font-medium">Items</th>
               <th className="px-5 py-3 text-right font-medium">Amount</th>
               <th className="px-5 py-3 text-center font-medium">Suppliers</th>
               <th className="px-5 py-3 text-left font-medium">Status</th>
@@ -138,6 +291,24 @@ export default function PurchaseOrders() {
               <tr key={p.id} className="hover:bg-secondary/40">
                 <td className="px-5 py-3 font-mono text-xs">{p.id}</td>
                 <td className="px-5 py-3">{p.buyer}</td>
+                <td className="px-5 py-3">
+                  <div className="space-y-1">
+                    {p.items.slice(0, 2).map((item) => (
+                      <div key={item.name} className="text-xs">
+                        {item.name}
+                        <span className="ml-1 text-muted-foreground">
+                          ({item.quantity} {item.unit})
+                        </span>
+                      </div>
+                    ))}
+
+                    {p.items.length > 2 && (
+                      <div className="text-xs text-primary">
+                        +{p.items.length - 2} more
+                      </div>
+                    )}
+                  </div>
+                </td>
                 <td className="px-5 py-3 text-right font-mono">{p.currency} {p.amount}</td>
                 <td className="px-5 py-3 text-center text-muted-foreground">{p.suppliers}</td>
                 <td className="px-5 py-3">

@@ -1,12 +1,16 @@
-from drf_spectacular.utils import extend_schema
+from drf_spectacular.utils import OpenApiResponse, extend_schema
 from rest_framework import generics
 from rest_framework.permissions import IsAuthenticated
 
 from .models import Supplier
 from .serializers import (
+    PurchaseOrderResponseSerializer,
     SupplierSerializer,
     SupplierResponseSerializer,
 )
+
+from .models import PurchaseOrder
+from .serializers import PurchaseOrderSerializer
 
 
 class SupplierListCreateView(generics.ListCreateAPIView):
@@ -78,3 +82,37 @@ class SupplierDetailView(
     )
     def delete(self, *args, **kwargs):
         return super().delete(*args, **kwargs)
+    
+
+
+
+@extend_schema(
+    tags=["Purchase Orders"],
+    summary="Create Purchase Order",
+    description=(
+        "Creates a new purchase order for the authenticated user's company. "
+        "The purchase order may contain multiple suppliers and multiple purchase items."
+    ),
+    request=PurchaseOrderSerializer,
+    responses={
+        201: OpenApiResponse(
+            response=PurchaseOrderResponseSerializer,
+            description="Purchase order created successfully.",
+        ),
+        400: OpenApiResponse(
+            description="Validation error.",
+        ),
+        401: OpenApiResponse(
+            description="Authentication credentials were not provided.",
+        ),
+    },
+)
+class PurchaseOrderCreateView(generics.CreateAPIView):
+    serializer_class = PurchaseOrderSerializer
+    permission_classes = [IsAuthenticated]
+
+    def perform_create(self, serializer):
+        serializer.save(
+            company=self.request.user.company,
+            created_by=self.request.user,
+        )
