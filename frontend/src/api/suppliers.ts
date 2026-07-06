@@ -2,6 +2,21 @@
 
 import { apiRequest } from "./client";
 
+export interface PurchaseItemPayload {
+  name: string;
+  quantity: number;
+  unit: string;
+}
+
+export interface PurchaseOrderPayload {
+  buyer: string;
+  amount: number;
+  currency: string;
+  suppliers: string[];
+  notes: string;
+  items: PurchaseItemPayload[];
+}
+
 export interface SupplierPayload {
   name: string;
   category: string;
@@ -26,6 +41,26 @@ export const createSupplier = async (
 
 export const getSuppliers = async () => {
   return apiRequest("/api/suppliers/", {
+    method: "GET",
+  });
+};
+
+
+
+
+
+
+export const createPurchaseOrder = async (
+  data: PurchaseOrderPayload
+) => {
+  return apiRequest("/api/suppliers/purchase-orders/create/", {
+    method: "POST",
+    body: data,
+  });
+};
+
+export const getPurchaseOrders = async () => {
+  return apiRequest("/api/suppliers/purchase-orders/", {
     method: "GET",
   });
 };

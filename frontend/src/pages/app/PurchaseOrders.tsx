@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Plus, Filter, Download } from "lucide-react";
 import { PageHeader } from "@/components/page-header";
 import { Button } from "@/components/ui/button";
@@ -21,63 +21,67 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import {
+  createPurchaseOrder,
+  getPurchaseOrders,
+} from "@/api/suppliers";
 
-const POS = [
-  {
-    id: "PO-48211",
-    buyer: "Northbridge Trading",
-    amount: "184,500,000",
-    currency: "NGN",
-    suppliers: 4,
-    status: "Settled",
-    created: "Jun 24",
-    items: [
-      { name: "Rice", quantity: 500, unit: "Bags" },
-      { name: "Maize", quantity: 200, unit: "Bags" },
-      { name: "Fertilizer", quantity: 120, unit: "Tons" },
-    ],
-  },
-  {
-    id: "PO-48207",
-    buyer: "Northbridge Trading",
-    amount: "92,000,000",
-    currency: "NGN",
-    suppliers: 3,
-    status: "Processing",
-    created: "Jun 24",
-    items: [
-      { name: "Cocoa Beans", quantity: 75, unit: "Tons" },
-      { name: "Palm Oil", quantity: 400, unit: "Litres" },
-    ],
-  },
-  {
-    id: "PO-48198",
-    buyer: "Lekki Industrial Co.",
-    amount: "61,200,000",
-    currency: "NGN",
-    suppliers: 5,
-    status: "Pending",
-    created: "Jun 23",
-    items: [
-      { name: "Steel Rods", quantity: 800, unit: "Pieces" },
-      { name: "Cement", quantity: 1000, unit: "Bags" },
-      { name: "Sand", quantity: 30, unit: "Truckloads" },
-    ],
-  },
-  {
-    id: "PO-48190",
-    buyer: "Apex Cement",
-    amount: "240,000,000",
-    currency: "NGN",
-    suppliers: 6,
-    status: "Settled",
-    created: "Jun 23",
-    items: [
-      { name: "Clinker", quantity: 500, unit: "Tons" },
-      { name: "Gypsum", quantity: 180, unit: "Tons" },
-    ],
-  },
-];
+// const POS = [
+//   {
+//     id: "PO-48211",
+//     buyer: "Northbridge Trading",
+//     amount: "184,500,000",
+//     currency: "NGN",
+//     suppliers: 4,
+//     status: "Settled",
+//     created: "Jun 24",
+//     items: [
+//       { name: "Rice", quantity: 500, unit: "Bags" },
+//       { name: "Maize", quantity: 200, unit: "Bags" },
+//       { name: "Fertilizer", quantity: 120, unit: "Tons" },
+//     ],
+//   },
+//   {
+//     id: "PO-48207",
+//     buyer: "Northbridge Trading",
+//     amount: "92,000,000",
+//     currency: "NGN",
+//     suppliers: 3,
+//     status: "Processing",
+//     created: "Jun 24",
+//     items: [
+//       { name: "Cocoa Beans", quantity: 75, unit: "Tons" },
+//       { name: "Palm Oil", quantity: 400, unit: "Litres" },
+//     ],
+//   },
+//   {
+//     id: "PO-48198",
+//     buyer: "Lekki Industrial Co.",
+//     amount: "61,200,000",
+//     currency: "NGN",
+//     suppliers: 5,
+//     status: "Pending",
+//     created: "Jun 23",
+//     items: [
+//       { name: "Steel Rods", quantity: 800, unit: "Pieces" },
+//       { name: "Cement", quantity: 1000, unit: "Bags" },
+//       { name: "Sand", quantity: 30, unit: "Truckloads" },
+//     ],
+//   },
+//   {
+//     id: "PO-48190",
+//     buyer: "Apex Cement",
+//     amount: "240,000,000",
+//     currency: "NGN",
+//     suppliers: 6,
+//     status: "Settled",
+//     created: "Jun 23",
+//     items: [
+//       { name: "Clinker", quantity: 500, unit: "Tons" },
+//       { name: "Gypsum", quantity: 180, unit: "Tons" },
+//     ],
+//   },
+// ];
 
 function badge(s: string) {
   switch (s) {
@@ -85,12 +89,44 @@ function badge(s: string) {
     case "Processing": return "bg-primary/10 text-primary";
     case "Pending": return "bg-warning/15 text-warning-foreground";
     case "Failed": return "bg-destructive/10 text-destructive";
+    case "DRAFT": return "bg-secondary text-secondary-foreground";
     default: return "bg-secondary";
   }
 }
 
-function NewPODialog() {
+interface PurchaseOrder {
+  id: string;
+  po_number: string;
+  buyer: string;
+  amount: string;
+  currency: string;
+  suppliers: number;
+  status: string;
+  created: string;
 
+  items?: {
+    name: string;
+    quantity: number;
+    unit: string;
+  }[];
+}
+
+function NewPODialog({
+    onSuccess,
+  }: {
+    onSuccess: () => Promise<void>;
+  }) {
+
+
+
+  const [formData, setFormData] = useState({
+    buyer: "",
+    amount: "",
+    currency: "NGN",
+    suppliers: "",
+    notes: "",
+  });
+  
   const [items, setItems] = useState([
     {
       item: "",
@@ -125,10 +161,48 @@ function NewPODialog() {
   const removeItem = (index: number) => {
     setItems(items.filter((_, i) => i !== index));
   };
-  const onSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    setOpen(false);
+
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value,
+    });
   };
+
+const onSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    const payload = {
+        buyer: formData.buyer,
+        amount: Number(formData.amount),
+        currency: formData.currency,
+        suppliers: formData.suppliers
+            .split(",")
+            .map((s) => s.trim()),
+
+        notes: formData.notes,
+
+        items: items.map((item) => ({
+            name: item.item,
+            quantity: Number(item.quantity),
+            unit: item.unit,
+        })),
+    };
+
+    try {
+
+        await createPurchaseOrder(payload);
+
+        await onSuccess();
+
+        setOpen(false);
+
+    } catch (err) {
+        console.error(err);
+    }
+};
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
@@ -142,16 +216,38 @@ function NewPODialog() {
         <form onSubmit={onSubmit} className="space-y-4">
           <div className="space-y-2">
             <Label htmlFor="po-buyer">Buyer</Label>
-            <Input id="po-buyer" placeholder="e.g. Northbridge Trading" required />
+            <Input
+              id="po-buyer"
+              name="buyer"
+              value={formData.buyer}
+              onChange={handleChange}
+              placeholder="e.g. Northbridge Trading"
+            />
           </div>
           <div className="grid grid-cols-2 gap-3">
             <div className="space-y-2">
               <Label htmlFor="po-amount">Amount</Label>
-              <Input id="po-amount" type="number" placeholder="0.00" required />
+              <Input
+                id="po-amount"
+                name="amount"
+                type="number"
+                value={formData.amount}
+                onChange={handleChange}
+                placeholder="0.00"
+                required
+              />
             </div>
             <div className="space-y-2">
               <Label htmlFor="po-currency">Currency</Label>
-              <Select defaultValue="NGN">
+              <Select
+                value={formData.currency}
+                onValueChange={(value)=>
+                    setFormData(prev=>({
+                        ...prev,
+                        currency:value
+                    }))
+                }
+              >
                 <SelectTrigger id="po-currency"><SelectValue /></SelectTrigger>
                 <SelectContent>
                   <SelectItem value="NGN">NGN</SelectItem>
@@ -234,11 +330,24 @@ function NewPODialog() {
           </div>
           <div className="space-y-2">
             <Label htmlFor="po-suppliers">Suppliers (comma separated)</Label>
-            <Input id="po-suppliers" placeholder="Hexa Steel, BlueLane Logistics" />
+            <Input
+              id="po-suppliers"
+              name="suppliers"
+              value={formData.suppliers}
+              onChange={handleChange}
+              placeholder="Hexa Steel, BlueLane Logistics"
+            />
           </div>
           <div className="space-y-2">
             <Label htmlFor="po-notes">Notes</Label>
-            <Textarea id="po-notes" placeholder="Reference, delivery terms…" rows={3} />
+            <Textarea
+              id="po-notes"
+              name="notes"
+              value={formData.notes}
+              onChange={handleChange}
+              placeholder="Reference, delivery terms…"
+              rows={3}
+            />
           </div>
           <DialogFooter>
             <Button type="button" variant="outline" onClick={() => setOpen(false)}>Cancel</Button>
@@ -251,6 +360,30 @@ function NewPODialog() {
 }
 
 export default function PurchaseOrders() {
+
+  const [loading, setLoading] = useState(false);
+
+  const [purchaseOrders, setPurchaseOrders] =
+    useState<PurchaseOrder[]>([]);
+
+  const loadPurchaseOrders = async () => {
+    try {
+      setLoading(true);
+
+    const response = await getPurchaseOrders();
+
+    setPurchaseOrders(response);
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    loadPurchaseOrders();
+  }, []);
+
   return (
     <>
       <PageHeader
@@ -259,7 +392,7 @@ export default function PurchaseOrders() {
         actions={
           <>
             <Button variant="outline" size="sm"><Download className="mr-1.5 h-4 w-4" /> Export</Button>
-            <NewPODialog />
+            <NewPODialog onSuccess={loadPurchaseOrders} />
           </>
         }
       />
@@ -287,27 +420,33 @@ export default function PurchaseOrders() {
             </tr>
           </thead>
           <tbody className="divide-y divide-border">
-            {POS.map((p) => (
-              <tr key={p.id} className="hover:bg-secondary/40">
-                <td className="px-5 py-3 font-mono text-xs">{p.id}</td>
+            {purchaseOrders.map((p) => (
+              <tr key={p.po_number} className="hover:bg-secondary/40">
+                <td className="px-5 py-3 font-mono text-xs">{p.po_number}</td>
                 <td className="px-5 py-3">{p.buyer}</td>
                 <td className="px-5 py-3">
-                  <div className="space-y-1">
-                    {p.items.slice(0, 2).map((item) => (
-                      <div key={item.name} className="text-xs">
-                        {item.name}
-                        <span className="ml-1 text-muted-foreground">
-                          ({item.quantity} {item.unit})
-                        </span>
-                      </div>
-                    ))}
+                  {p.items?.length ? (
+                    <div className="space-y-1">
+                      {p.items.slice(0, 2).map((item) => (
+                        <div key={item.name} className="text-xs">
+                          {item.name}
+                          <span className="ml-1 text-muted-foreground">
+                            ({item.quantity} {item.unit})
+                          </span>
+                        </div>
+                      ))}
 
-                    {p.items.length > 2 && (
-                      <div className="text-xs text-primary">
-                        +{p.items.length - 2} more
-                      </div>
-                    )}
-                  </div>
+                      {p.items.length > 2 && (
+                        <div className="text-xs text-primary">
+                          +{p.items.length - 2} more
+                        </div>
+                      )}
+                    </div>
+                  ) : (
+                    <span className="text-muted-foreground text-xs">
+                      No items
+                    </span>
+                  )}
                 </td>
                 <td className="px-5 py-3 text-right font-mono">{p.currency} {p.amount}</td>
                 <td className="px-5 py-3 text-center text-muted-foreground">{p.suppliers}</td>

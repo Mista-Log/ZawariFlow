@@ -110,6 +110,10 @@ class PurchaseOrderItemResponseSerializer(serializers.ModelSerializer):
 class PurchaseOrderListSerializer(serializers.ModelSerializer):
     suppliers = serializers.SerializerMethodField()
     created = serializers.SerializerMethodField()
+    items = PurchaseOrderItemResponseSerializer(
+        many=True,
+        read_only=True,
+    )
 
     class Meta:
         model = PurchaseOrder
@@ -123,6 +127,7 @@ class PurchaseOrderListSerializer(serializers.ModelSerializer):
             "suppliers",
             "status",
             "created",
+            "items",
         )
 
     def get_suppliers(self, obj):
