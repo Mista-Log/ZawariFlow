@@ -7,7 +7,14 @@ from .serializers import (
     PurchaseOrderResponseSerializer,
     SupplierSerializer,
     SupplierResponseSerializer,
+        PurchaseOrderListSerializer,
+    PurchaseOrderDetailSerializer,
 )
+
+from rest_framework import generics
+from rest_framework.permissions import IsAuthenticated
+
+
 
 from .models import PurchaseOrder
 from .serializers import PurchaseOrderSerializer
@@ -115,4 +122,44 @@ class PurchaseOrderCreateView(generics.CreateAPIView):
         serializer.save(
             company=self.request.user.company,
             created_by=self.request.user,
+        )
+
+
+@extend_schema(
+    tags=["Purchase Orders"],
+    summary="List Purchase Orders",
+    description="Returns all purchase orders belonging to the authenticated user's company.",
+    responses={200: PurchaseOrderListSerializer(many=True)},
+)
+class PurchaseOrderListView(generics.ListAPIView):
+    serializer_class = PurchaseOrderListSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        return PurchaseOrder.objects.filter(
+            company=self.request.user.company
+        ).prefetch_related(
+            "suppliers",
+            "items",
+        )
+    
+
+@extend_schema(
+    tags=["Purchase Orders"],
+    summary="Get Purchase Order",
+    description="Retrieve a purchase order and all of its items.",
+    responses={200: PurchaseOrderDetailSerializer},
+)
+class PurchaseOrderDetailView(generics.RetrieveAPIView):
+    serializer_class = PurchaseOrderDetailSerializer
+    permission_classes = [IsAuthenticated]
+
+    lookup_field = "id"
+
+    def get_queryset(self):
+        return PurchaseOrder.objects.filter(
+            company=self.request.user.company
+        ).prefetch_related(
+            "suppliers",
+            "items",
         )

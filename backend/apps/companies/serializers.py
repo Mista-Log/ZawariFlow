@@ -1,6 +1,8 @@
 from rest_framework import serializers
 
 from .models import PurchaseOrder, PurchaseOrderItem, Supplier
+from rest_framework import serializers
+
 
 class SupplierSerializer(serializers.ModelSerializer):
 
@@ -81,6 +83,68 @@ class PurchaseOrderResponseSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = PurchaseOrder
+        fields = (
+            "id",
+            "po_number",
+            "buyer",
+            "amount",
+            "currency",
+            "status",
+            "notes",
+            "suppliers",
+            "items",
+            "created_at",
+            "updated_at",
+        )
+
+class PurchaseOrderItemResponseSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = PurchaseOrderItem
+        fields = (
+            "id",
+            "name",
+            "quantity",
+            "unit",
+        )
+
+class PurchaseOrderListSerializer(serializers.ModelSerializer):
+    suppliers = serializers.SerializerMethodField()
+    created = serializers.SerializerMethodField()
+
+    class Meta:
+        model = PurchaseOrder
+
+        fields = (
+            "id",
+            "po_number",
+            "buyer",
+            "amount",
+            "currency",
+            "suppliers",
+            "status",
+            "created",
+        )
+
+    def get_suppliers(self, obj):
+        return obj.suppliers.count()
+
+    def get_created(self, obj):
+        return obj.created_at.strftime("%b %d")
+    
+class PurchaseOrderDetailSerializer(serializers.ModelSerializer):
+    items = PurchaseOrderItemResponseSerializer(
+        many=True,
+        read_only=True,
+    )
+
+    suppliers = SupplierSerializer(
+        many=True,
+        read_only=True,
+    )
+
+    class Meta:
+        model = PurchaseOrder
+
         fields = (
             "id",
             "po_number",
