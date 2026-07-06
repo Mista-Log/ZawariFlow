@@ -8,6 +8,11 @@ export interface PurchaseItemPayload {
   unit: string;
 }
 
+export interface Supplier {
+  id: string;
+  name: string;
+}
+
 export interface PurchaseOrderPayload {
   buyer: string;
   amount: number;
