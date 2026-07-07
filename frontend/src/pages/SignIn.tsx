@@ -5,6 +5,7 @@ import { Logo } from "@/components/brand";
 import { Button } from "@/components/ui/button";
 import { signin } from "@/api/auth";
 import { useAuth } from "@/contexts/AuthContext";
+import paymentGif from "@/assets/videos/finance.svg";
 
 export default function SignIn() {
   const navigate = useNavigate();
@@ -119,13 +120,13 @@ export default function SignIn() {
             </Button>
           </form>
 
-          <div className="my-6 flex items-center gap-3 text-xs text-muted-foreground">
+          {/* <div className="my-6 flex items-center gap-3 text-xs text-muted-foreground">
             <span className="h-px flex-1 bg-border" /> or <span className="h-px flex-1 bg-border" />
-          </div>
+          </div> */}
 
-          <Button variant="outline" className="w-full" size="lg">
+          {/* <Button variant="outline" className="w-full" size="lg">
             Continue with SSO
-          </Button>
+          </Button> */}
 
           <p className="mt-8 text-center text-sm text-muted-foreground">
             New to ZawariFlow?{" "}
@@ -140,20 +141,34 @@ export default function SignIn() {
         </p>
       </div>
 
-      <div className="relative hidden flex-col justify-between overflow-hidden bg-primary p-12 text-primary-foreground lg:flex">
-        <div className="relative z-10">
-          <p className="text-sm font-medium opacity-90">ZawariFlow</p>
-          <p className="mt-1 text-xs opacity-70">B2B supply chain payments</p>
-        </div>
-        <div className="relative z-10 max-w-md">
-          <p className="text-2xl font-semibold leading-snug">
-            "We collapsed a four-person reconciliation workflow into a single API call. Settlements now happen the same day funds clear."
-          </p>
-          <p className="mt-6 text-sm opacity-80">Adaeze O. · Head of Operations, Northbridge Trading</p>
-        </div>
-        <div className="pointer-events-none absolute -right-32 -top-32 h-96 w-96 rounded-full bg-primary-foreground/10 blur-3xl" />
-        <div className="pointer-events-none absolute -bottom-24 -left-24 h-80 w-80 rounded-full bg-primary-foreground/10 blur-3xl" />
-      </div>
+<div className="hidden lg:flex flex-col items-center justify-center bg-primary p-12">
+  <img
+    src={paymentGif}
+    alt="Payment illustration"
+    className="hidden lg:block w-96"
+  />
+
+  <div className="mt-6 w-full max-w-sm rounded-2xl border border-white/20 bg-white/10 p-5 backdrop-blur-lg text-white">
+    <p className="font-semibold">
+      Purchase Order #PO-2026-019
+    </p>
+
+    <div className="mt-4 flex justify-between">
+      <span>Supplier</span>
+      <span>Northbridge Ltd</span>
+    </div>
+
+    <div className="mt-2 flex justify-between">
+      <span>Status</span>
+      <span className="text-green-300">Paid ✓</span>
+    </div>
+
+    <div className="mt-2 flex justify-between">
+      <span>Settlement</span>
+      <span>Same Day</span>
+    </div>
+  </div>
+</div>
     </div>
   );
 }

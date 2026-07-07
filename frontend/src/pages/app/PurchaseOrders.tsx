@@ -24,6 +24,8 @@ import {
 import {
   createPurchaseOrder,
   getPurchaseOrders,
+  getSuppliers,
+  Supplier,
 } from "@/api/suppliers";
 
 // const POS = [
@@ -117,13 +119,13 @@ function NewPODialog({
     onSuccess: () => Promise<void>;
   }) {
 
-
+  const [suppliers, setSuppliers] = useState<Supplier[]>([]);
 
   const [formData, setFormData] = useState({
     buyer: "",
     amount: "",
     currency: "NGN",
-    suppliers: "",
+    supplierId: "",
     notes: "",
   });
   
@@ -136,6 +138,20 @@ function NewPODialog({
   ]);
   const [open, setOpen] = useState(false);
 
+  useEffect(() => {
+      const loadSuppliers = async () => {
+          try {
+              const data = await getSuppliers();
+              setSuppliers(data);
+          } catch (err) {
+              console.error(err);
+          }
+      };
+
+      if (open) {
+          loadSuppliers();
+      }
+  }, [open]);  
 
   const addItem = () => {
     setItems([
@@ -178,9 +194,7 @@ const onSubmit = async (e: React.FormEvent) => {
         buyer: formData.buyer,
         amount: Number(formData.amount),
         currency: formData.currency,
-        suppliers: formData.suppliers
-            .split(",")
-            .map((s) => s.trim()),
+        suppliers: [formData.supplierId],
 
         notes: formData.notes,
 
@@ -329,14 +343,32 @@ const onSubmit = async (e: React.FormEvent) => {
             ))}
           </div>
           <div className="space-y-2">
-            <Label htmlFor="po-suppliers">Suppliers (comma separated)</Label>
-            <Input
-              id="po-suppliers"
-              name="suppliers"
-              value={formData.suppliers}
-              onChange={handleChange}
-              placeholder="Hexa Steel, BlueLane Logistics"
-            />
+              <Label>Select Supplier</Label>
+
+              <Select
+                  value={formData.supplierId}
+                  onValueChange={(value) =>
+                      setFormData((prev) => ({
+                          ...prev,
+                          supplierId: value,
+                      }))
+                  }
+              >
+                  <SelectTrigger>
+                      <SelectValue placeholder="Select supplier" />
+                  </SelectTrigger>
+
+                  <SelectContent>
+                      {suppliers.map((supplier) => (
+                          <SelectItem
+                              key={supplier.id}
+                              value={supplier.id}
+                          >
+                              {supplier.name}
+                          </SelectItem>
+                      ))}
+                  </SelectContent>
+              </Select>
           </div>
           <div className="space-y-2">
             <Label htmlFor="po-notes">Notes</Label>
