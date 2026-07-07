@@ -5,6 +5,7 @@ import { Logo } from "@/components/brand";
 import { Button } from "@/components/ui/button";
 import { signin, signup } from "@/api/auth";
 import { useAuth } from "@/contexts/AuthContext";
+import financeSvg from "@/assets/payment.svg";
 
 export default function SignUp() {
   const navigate = useNavigate();
@@ -159,30 +160,18 @@ export default function SignUp() {
         </p>
       </div>
 
-      <div className="relative hidden flex-col justify-between overflow-hidden bg-primary p-12 text-primary-foreground lg:flex">
-        <div className="relative z-10">
-          <p className="text-sm font-medium opacity-90">What you get on day one</p>
-        </div>
-        <ul className="relative z-10 space-y-4 text-sm">
-          {[
-            "Sandbox + live API keys with idempotent endpoints",
-            "Visual PO mapping with split settlement rules",
-            "Per-counterparty virtual accounts and routing",
-            "Signed webhooks for every settlement event",
-            "Audit-grade ledger exports for finance",
-          ].map((b) => (
-            <li key={b} className="flex items-start gap-3">
-              <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0" />
-              <span className="opacity-90">{b}</span>
-            </li>
-          ))}
-        </ul>
-        <p className="relative z-10 text-xs opacity-70">
-          Trusted by operators moving billions in B2B volume.
-        </p>
-        <div className="pointer-events-none absolute -right-32 -top-32 h-96 w-96 rounded-full bg-primary-foreground/10 blur-3xl" />
-        <div className="pointer-events-none absolute -bottom-24 -left-24 h-80 w-80 rounded-full bg-primary-foreground/10 blur-3xl" />
-      </div>
+<div className="relative hidden items-center justify-center overflow-hidden bg-primary lg:flex">
+  {/* Background glow */}
+  <div className="pointer-events-none absolute -right-32 -top-32 h-96 w-96 rounded-full bg-primary-foreground/10 blur-3xl" />
+  <div className="pointer-events-none absolute -bottom-24 -left-24 h-80 w-80 rounded-full bg-primary-foreground/10 blur-3xl" />
+
+  {/* SVG */}
+  <img
+    src={financeSvg}
+    alt="Finance illustration"
+    className="relative z-10 w-[80%] max-w-2xl object-contain"
+  />
+</div>
     </div>
   );
 }
