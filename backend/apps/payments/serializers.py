@@ -35,7 +35,6 @@ class VirtualAccountSerializer(serializers.ModelSerializer):
             "account_number",
             "bank_name",
             "provider",
-            "provider_account_id",
             "account_reference",
             "bank_account_name",
             "account_holder_id",

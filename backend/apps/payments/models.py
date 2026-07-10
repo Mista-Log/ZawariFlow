@@ -84,12 +84,6 @@ class VirtualAccount(models.Model):
         default="NOMBA",
     )
 
-    provider_account_id = models.CharField(
-        max_length=255,
-        unique=True,
-    )
-
-
     status = models.CharField(
         max_length=20,
         choices=VirtualAccountStatus.choices,
