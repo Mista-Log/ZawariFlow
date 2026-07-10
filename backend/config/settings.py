@@ -15,7 +15,10 @@ from pathlib import Path
 from datetime import timedelta
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
+import os
+from dotenv import load_dotenv
 
+load_dotenv()
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/6.0/howto/deployment/checklist/
@@ -180,7 +183,7 @@ CORS_ALLOW_CREDENTIALS = True
 
 SIMPLE_JWT = {
     # Increase access token lifetime (e.g., from default 5 mins to 1 hour)
-    "ACCESS_TOKEN_LIFETIME": timedelta(hours=1),
+    "ACCESS_TOKEN_LIFETIME": timedelta(hours=24),
     
     # Increase refresh token lifetime (e.g., from default 1 day to 7 days)
     "REFRESH_TOKEN_LIFETIME": timedelta(days=7),
@@ -189,3 +192,10 @@ SIMPLE_JWT = {
     "ROTATE_REFRESH_TOKENS": True,
     "BLACKLIST_AFTER_ROTATION": True,
 }
+
+
+
+NOMBA_BASE_URL = os.getenv("NOMBA_BASE_URL", "https://sandbox.nomba.com/v1")
+NOMBA_ACCOUNT_ID = os.getenv("NOMBA_ACCOUNT_ID")
+NOMBA_CLIENT_ID = os.getenv("NOMBA_CLIENT_ID")
+NOMBA_CLIENT_SECRET = os.getenv("NOMBA_CLIENT_SECRET")

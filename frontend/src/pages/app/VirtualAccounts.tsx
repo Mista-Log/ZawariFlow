@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Plus, Copy } from "lucide-react";
 import { PageHeader } from "@/components/page-header";
 import { Button } from "@/components/ui/button";
@@ -20,6 +20,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { getSuppliers } from "@/api/suppliers";
+import { createVirtualAccount, getVirtualAccounts, VirtualAccount } from "@/api/payments";
 
 const ACCOUNTS = [
   { id: "VA-30412", label: "Hexa Steel · Settlements", number: "9034 1280 41", bank: "Wema Bank", balance: "412,800,000", routed: "PO-* (factory leg)" },
@@ -28,11 +30,54 @@ const ACCOUNTS = [
   { id: "VA-30521", label: "Inflows · Northbridge Trading", number: "9034 1280 88", bank: "Wema Bank", balance: "0", routed: "PO inflow auto-route" },
 ];
 
-function IssueAccountDialog() {
+function IssueAccountDialog({
+  onSuccess,
+}: {
+  onSuccess: () => Promise<void>;
+}) {
+
+  const [formData, setFormData] = useState({
+      supplier: "",
+      expected_amount: "",
+      expiry_date: "",
+  });
+
+  const [suppliers, setSuppliers] = useState([]);
+
+  useEffect(() => {
+      const loadSuppliers = async () => {
+          try {
+              const res = await getSuppliers();
+              setSuppliers(res);
+          } catch (err) {
+              console.error(err);
+          }
+      };
+
+      loadSuppliers();
+  }, []);
+
+
+
   const [open, setOpen] = useState(false);
-  const onSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    setOpen(false);
+  const onSubmit = async (e: React.FormEvent) => {
+      e.preventDefault();
+
+      try {
+
+          await createVirtualAccount({
+              supplier: formData.supplier,
+              expected_amount: Number(formData.expected_amount),
+              expiry_date: formData.expiry_date,
+          });
+
+          await onSuccess();
+
+          setOpen(false);
+
+      } catch(err){
+          console.error(err);
+      }
   };
   return (
     <Dialog open={open} onOpenChange={setOpen}>
@@ -46,40 +91,59 @@ function IssueAccountDialog() {
         </DialogHeader>
         <form onSubmit={onSubmit} className="space-y-4">
           <div className="space-y-2">
-            <Label htmlFor="va-label">Account label</Label>
-            <Input id="va-label" placeholder="e.g. Hexa Steel · Settlements" required />
-          </div>
-          <div className="grid grid-cols-2 gap-3">
-            <div className="space-y-2">
-              <Label htmlFor="va-party">Counterparty</Label>
-              <Input id="va-party" placeholder="Supplier / buyer name" required />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="va-bank">Bank</Label>
-              <Select defaultValue="Wema Bank">
-                <SelectTrigger id="va-bank"><SelectValue /></SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="Wema Bank">Wema Bank</SelectItem>
-                  <SelectItem value="Providus">Providus</SelectItem>
-                  <SelectItem value="Sterling">Sterling</SelectItem>
-                </SelectContent>
+              <Label>Supplier</Label>
+
+              <Select
+                  value={formData.supplier}
+                  onValueChange={(value) =>
+                      setFormData((prev) => ({
+                          ...prev,
+                          supplier: value,
+                      }))
+                  }
+              >
+                  <SelectTrigger>
+                      <SelectValue placeholder="Select supplier" />
+                  </SelectTrigger>
+
+                  <SelectContent>
+                      {suppliers.map((supplier) => (
+                          <SelectItem
+                              key={supplier.id}
+                              value={supplier.id}
+                          >
+                              {supplier.name}
+                          </SelectItem>
+                      ))}
+                  </SelectContent>
               </Select>
-            </div>
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="va-rule">Expected Amount</Label>
+            <Input
+              type="number"
+              value={formData.expected_amount}
+              onChange={(e)=>
+                  setFormData({
+                      ...formData,
+                      expected_amount:e.target.value
+                  })
+              }
+          />
           </div>
           <div className="space-y-2">
-            <Label htmlFor="va-rule">Routing rule</Label>
-            <Input id="va-rule" placeholder="e.g. PO-* (factory leg)" />
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="va-currency">Currency</Label>
-            <Select defaultValue="NGN">
-              <SelectTrigger id="va-currency"><SelectValue /></SelectTrigger>
-              <SelectContent>
-                <SelectItem value="NGN">NGN</SelectItem>
-                <SelectItem value="USD">USD</SelectItem>
-                <SelectItem value="EUR">EUR</SelectItem>
-              </SelectContent>
-            </Select>
+            <Label htmlFor="va-rule">Expiry Date</Label>
+            <Input
+                type="date"
+                value={formData.expiry_date}
+                onChange={(e)=>
+                    setFormData({
+                        ...formData,
+                        expiry_date:e.target.value
+                    })
+                }
+            />
           </div>
           <DialogFooter>
             <Button type="button" variant="outline" onClick={() => setOpen(false)}>Cancel</Button>
@@ -91,40 +155,88 @@ function IssueAccountDialog() {
   );
 }
 
+
+function badge(status: string) {
+    switch (status) {
+
+        case "ACTIVE":
+            return "bg-success/10 text-success";
+
+        case "PENDING":
+            return "bg-warning/10 text-warning";
+
+        case "EXPIRED":
+            return "bg-destructive/10 text-destructive";
+
+        default:
+            return "bg-secondary";
+    }
+}
+
 export default function VirtualAccounts() {
+
+
+  const [accounts, setAccounts] = useState<VirtualAccount[]>([]);
+
+  const [loading, setLoading] = useState(false);
+
+  const loadAccounts = async () => {
+
+      try{
+
+          setLoading(true);
+
+          const response = await getVirtualAccounts();
+
+          setAccounts(response);
+
+      }finally{
+          setLoading(false);
+      }
+
+  };
+
+  useEffect(() => {
+      loadAccounts();
+  }, []);
+
   return (
     <>
       <PageHeader
         title="Virtual accounts"
         description="Per-counterparty accounts that automatically route inflows to the right ledger."
-        actions={<IssueAccountDialog />}
+        actions={<IssueAccountDialog onSuccess={loadAccounts} />}
       />
 
       <div className="grid gap-4 md:grid-cols-2">
-        {ACCOUNTS.map((a) => (
-          <div key={a.id} className="rounded-xl border border-border bg-card p-5">
+        {accounts.map((account) => (
+          <div key={account.id} className="rounded-xl border border-border bg-card p-5">
             <div className="flex items-start justify-between">
               <div>
-                <p className="text-xs font-mono text-muted-foreground">{a.id}</p>
-                <p className="mt-1 font-medium">{a.label}</p>
+                <p className="text-xs font-mono text-muted-foreground">{account.id}</p>
+                <p className="mt-1 font-medium">{account.company}</p>
               </div>
-              <span className="rounded-full bg-success/10 px-2 py-0.5 text-xs font-medium text-success">Active</span>
+              <span
+                  className={`rounded-full px-2 py-0.5 text-xs ${badge(account.status)}`}
+              >
+                  {account.status}
+              </span>
             </div>
             <div className="mt-5 rounded-md border border-border bg-secondary/40 p-3">
-              <p className="text-xs text-muted-foreground">{a.bank}</p>
+              <p className="text-xs text-muted-foreground">{account.bank_name}</p>
               <div className="mt-1 flex items-center justify-between">
-                <p className="font-mono text-lg tracking-wider">{a.number}</p>
+                <p className="font-mono text-lg tracking-wider">{account.account_number}</p>
                 <button className="grid h-7 w-7 place-items-center rounded text-muted-foreground hover:bg-background hover:text-foreground"><Copy className="h-3.5 w-3.5" /></button>
               </div>
             </div>
             <div className="mt-4 grid grid-cols-2 gap-3 text-xs">
               <div>
                 <p className="text-muted-foreground">Balance</p>
-                <p className="mt-0.5 font-mono text-sm">₦ {a.balance}</p>
+                <p className="mt-0.5 font-mono text-sm">₦ {account.balance}</p>
               </div>
               <div className="text-right">
                 <p className="text-muted-foreground">Routing rule</p>
-                <p className="mt-0.5 font-mono text-xs">{a.routed}</p>
+                <p className="mt-0.5 font-mono text-xs">{account.routed}</p>
               </div>
             </div>
           </div>
