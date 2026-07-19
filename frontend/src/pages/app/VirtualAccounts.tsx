@@ -208,6 +208,19 @@ export default function VirtualAccounts() {
         actions={<IssueAccountDialog onSuccess={loadAccounts} />}
       />
 
+
+      {accounts.length === 0 ? (
+        <div className="flex h-64 flex-col items-center justify-center rounded-xl border border-dashed border-border bg-card">
+          <h3 className="text-lg font-semibold">No virtual accounts available</h3>
+          <p className="mt-2 text-sm text-muted-foreground">
+            You haven't created any virtual accounts yet.
+          </p>
+
+          <div className="mt-6">
+            <IssueAccountDialog onSuccess={loadAccounts} />
+          </div>
+        </div>
+      ) : (
       <div className="grid gap-4 md:grid-cols-2">
         {accounts.map((account) => (
           <div key={account.id} className="rounded-xl border border-border bg-card p-5">
@@ -242,6 +255,7 @@ export default function VirtualAccounts() {
           </div>
         ))}
       </div>
+      )}
     </>
   );
 }
