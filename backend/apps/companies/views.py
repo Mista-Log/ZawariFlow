@@ -1,6 +1,7 @@
 from drf_spectacular.utils import OpenApiResponse, extend_schema
 from rest_framework import generics
 from rest_framework.permissions import IsAuthenticated
+from rest_framework.exceptions import ValidationError
 
 from .models import Supplier
 from .serializers import (
@@ -30,10 +31,16 @@ class SupplierListCreateView(generics.ListCreateAPIView):
             company=self.request.user.company
         )
 
+
     def perform_create(self, serializer):
-        serializer.save(
-            company=self.request.user.company
-        )
+        company = self.request.user.company
+
+        if company is None:
+            raise ValidationError({
+                "company": "You are not assigned to a company."
+            })
+
+        serializer.save(company=company)
 
     @extend_schema(
         tags=["Suppliers"],

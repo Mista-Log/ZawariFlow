@@ -194,7 +194,7 @@ SIMPLE_JWT = {
 
 
 
-NOMBA_BASE_URL = os.getenv("NOMBA_BASE_URL", "https://sandbox.nomba.com/v1")
-NOMBA_ACCOUNT_ID = os.getenv("NOMBA_ACCOUNT_ID")
-NOMBA_CLIENT_ID = os.getenv("NOMBA_CLIENT_ID")
-NOMBA_CLIENT_SECRET = os.getenv("NOMBA_CLIENT_SECRET")
+MONNIFY_BASE_URL = os.getenv("MONNIFY_BASE_URL", "https://sandbox.monnify.com")
+MONNIFY_API_KEY = os.getenv("MONNIFY_API_KEY")
+MONNIFY_SECRET_KEY = os.getenv("MONNIFY_SECRET_KEY")
+MONNIFY_CONTRACT_CODE = os.getenv("MONNIFY_CONTRACT_CODE")

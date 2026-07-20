@@ -81,7 +81,11 @@ class VirtualAccount(models.Model):
 
     provider = models.CharField(
         max_length=30,
-        default="NOMBA",
+        default="MONNIFY",
+    )
+
+    customer_email = models.EmailField(
+        blank=True,
     )
 
     status = models.CharField(
@@ -278,7 +282,7 @@ class PaymentWebhook(models.Model):
     def __str__(self):
         return self.event
     
-class NombaCredential(models.Model):
+class MonnifyCredential(models.Model):
     id = models.UUIDField(
         primary_key=True,
         default=uuid.uuid4,
@@ -288,22 +292,18 @@ class NombaCredential(models.Model):
     company = models.OneToOneField(
         "companies.Company",
         on_delete=models.CASCADE,
-        related_name="nomba_credentials",
+        related_name="monnify_credentials",
     )
 
-    merchant_id = models.CharField(
-        max_length=255,
-    )
+    api_key = models.CharField(max_length=255)
 
-    client_id = models.CharField(
-        max_length=255,
-    )
+    secret_key = models.CharField(max_length=255)
 
-    api_key = models.TextField()
+    contract_code = models.CharField(max_length=100)
 
     environment = models.CharField(
-        max_length=20,
         default="sandbox",
+        max_length=20,
     )
 
     created_at = models.DateTimeField(

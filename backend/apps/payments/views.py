@@ -58,9 +58,7 @@ class CreateVirtualAccountView(APIView):
             )
 
         account = create_virtual_account(
-            supplier=supplier,
-            expected_amount=serializer.validated_data.get("expected_amount"),
-            expiry_date=serializer.validated_data.get("expiry_date"),
+            supplier=supplier
         )
 
         return Response(
