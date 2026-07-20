@@ -101,10 +101,7 @@ class Supplier(models.Model):
         max_length=100,
     )
 
-    account_number = models.CharField(
-        max_length=100,
-        unique=True,
-    )
+
 
     transaction_volume = models.DecimalField(
         max_digits=18,
@@ -126,6 +123,7 @@ class Supplier(models.Model):
 
     email = models.EmailField(
         blank=True,
+        unique=True,
     )
 
     phone_number = models.CharField(

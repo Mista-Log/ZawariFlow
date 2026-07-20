@@ -232,15 +232,7 @@ function AddSupplierDialog({
                 placeholder="Wema Bank"
             />
             </div>
-            <div className="space-y-2">
-              <Label htmlFor="sup-acct">Account number</Label>
-              <Input
-                id="account_number"
-                value={formData.account_number}
-                onChange={handleChange}
-                placeholder="0123456789"
-            />
-            </div>
+
             <div className="space-y-2">
               <Label>Transaction Volume</Label>
 

@@ -2,7 +2,8 @@ from drf_spectacular.utils import OpenApiResponse, extend_schema
 from rest_framework import generics
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.exceptions import ValidationError
-
+from django.db import transaction
+from apps.payments.services import create_virtual_account
 from .models import Supplier
 from .serializers import (
     PurchaseOrderResponseSerializer,
@@ -11,14 +12,12 @@ from .serializers import (
     PurchaseOrderListSerializer,
     PurchaseOrderDetailSerializer,
 )
-
 from rest_framework import generics
 from rest_framework.permissions import IsAuthenticated
-
-
-
 from .models import PurchaseOrder
 from .serializers import PurchaseOrderSerializer
+
+
 
 
 class SupplierListCreateView(generics.ListCreateAPIView):
@@ -31,16 +30,15 @@ class SupplierListCreateView(generics.ListCreateAPIView):
             company=self.request.user.company
         )
 
-
+    @transaction.atomic
     def perform_create(self, serializer):
-        company = self.request.user.company
 
-        if company is None:
-            raise ValidationError({
-                "company": "You are not assigned to a company."
-            })
+        supplier = serializer.save(
+            company=self.request.user.company
+        )
 
-        serializer.save(company=company)
+        create_virtual_account(supplier)
+
 
     @extend_schema(
         tags=["Suppliers"],
