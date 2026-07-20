@@ -5,10 +5,23 @@ from rest_framework import serializers
 
 
 class SupplierSerializer(serializers.ModelSerializer):
+    virtual_account = serializers.SerializerMethodField()
 
     class Meta:
         model = Supplier
         exclude = ("company",)
+
+    def get_virtual_account(self, obj):
+        account = getattr(obj, "virtual_account", None)
+
+        if account is None:
+            return None
+
+        return {
+            "account_number": account.account_number,
+            "bank_name": account.bank_name,
+            "account_name": account.account_name,
+        }
 
 class SupplierResponseSerializer(serializers.ModelSerializer):
 

@@ -2,6 +2,8 @@ import uuid
 
 from django.db import models
 
+from apps.companies.models import Supplier
+
 
 class VirtualAccountStatus(models.TextChoices):
     PENDING = "PENDING", "Pending"
@@ -17,10 +19,10 @@ class VirtualAccount(models.Model):
         editable=False,
     )
 
-    supplier = models.ForeignKey(
-        "companies.Supplier",
+    supplier = models.OneToOneField(
+        Supplier,
         on_delete=models.CASCADE,
-        related_name="virtual_accounts",
+        related_name="virtual_account",
     )
 
     account_name = models.CharField(
