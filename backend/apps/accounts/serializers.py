@@ -93,7 +93,6 @@ class CompanySerializer(serializers.ModelSerializer):
 
 class UserProfileSerializer(serializers.ModelSerializer):
     company = CompanySerializer(
-        source="owned_company",
         read_only=True,
     )
     class Meta:
@@ -181,7 +180,7 @@ class UpdateProfileSerializer(serializers.ModelSerializer):
         instance.role = role
 
         if role == UserRole.OWNER:
-            Company.objects.update_or_create(
+            company, _ = Company.objects.update_or_create(
                 owner=instance,
                 defaults={
                     "name": validated_data.pop("company_name"),
@@ -197,6 +196,9 @@ class UpdateProfileSerializer(serializers.ModelSerializer):
                     "website": validated_data.pop("website", ""),
                 },
             )
+
+            # 👇 Assign the owner to their own company
+            instance.company = company
 
         instance.profile_completed = True
         instance.save()

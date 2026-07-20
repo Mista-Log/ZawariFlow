@@ -20,8 +20,6 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-# Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/6.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = 'django-insecure-4nn$1#1p$i!)t5u*f5)ab&ps$w#g8k7tp(scrd^22k$)m-0fk)'
@@ -173,6 +171,7 @@ AUTH_USER_MODEL = "accounts.User"
 
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:8080",
+    "http://127.0.0.1:8080",
     "https://zawariflow.onrender.com",
     "https://zawari-flow.vercel.app",
 ]
@@ -195,7 +194,7 @@ SIMPLE_JWT = {
 
 
 
-NOMBA_BASE_URL = os.getenv("NOMBA_BASE_URL", "https://sandbox.nomba.com/v1")
-NOMBA_ACCOUNT_ID = os.getenv("NOMBA_ACCOUNT_ID")
-NOMBA_CLIENT_ID = os.getenv("NOMBA_CLIENT_ID")
-NOMBA_CLIENT_SECRET = os.getenv("NOMBA_CLIENT_SECRET")
+MONNIFY_BASE_URL = os.getenv("MONNIFY_BASE_URL", "https://sandbox.monnify.com")
+MONNIFY_API_KEY = os.getenv("MONNIFY_API_KEY")
+MONNIFY_SECRET_KEY = os.getenv("MONNIFY_SECRET_KEY")
+MONNIFY_CONTRACT_CODE = os.getenv("MONNIFY_CONTRACT_CODE")
