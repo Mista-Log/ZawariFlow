@@ -209,11 +209,7 @@ export default function VirtualAccounts() {
       />
 
 
-      {loading ? (
-        <div className="flex h-48 items-center justify-center">
-          <p className="text-muted-foreground">Loading virtual accounts...</p>
-        </div>
-      ) : accounts.length === 0 ? (
+      {accounts.length === 0 ? (
         <div className="flex h-64 flex-col items-center justify-center rounded-xl border border-dashed border-border bg-card">
           <h3 className="text-lg font-semibold">No virtual accounts available</h3>
           <p className="mt-2 text-sm text-muted-foreground">
