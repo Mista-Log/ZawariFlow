@@ -66,6 +66,18 @@ export default function Settlements() {
     <>
       <PageHeader title="Settlements" description="Every disbursement leg of every purchase order." />
 
+
+
+    {rows.length === 0 ? (
+      <div className="flex h-64 flex-col items-center justify-center rounded-xl border border-dashed border-border bg-card">
+        <h3 className="text-lg font-semibold">
+          No settlements available
+        </h3>
+        <p className="mt-2 text-sm text-muted-foreground">
+          There are no settlement records yet.
+        </p>
+      </div>
+    ) : (
       <div className="overflow-x-auto rounded-xl border border-border bg-card">
         <table className="w-full text-sm">
           <thead className="border-b border-border bg-secondary/50 text-xs uppercase tracking-wider text-muted-foreground">
@@ -106,6 +118,7 @@ export default function Settlements() {
           </tbody>
         </table>
       </div>
+    )}
     </>
   );
 }
