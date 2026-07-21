@@ -25,7 +25,7 @@ const NAV: Array<{ to: string; label: string; icon: typeof LayoutDashboard; exac
   { to: "/app/suppliers", label: "Suppliers", icon: Users },
   { to: "/app/settlements", label: "Settlements", icon: Split },
   { to: "/app/virtual-accounts", label: "Virtual Accounts", icon: Wallet },
-  { to: "/app/subscriptions", label: "Subscriptions", icon: Repeat },
+  // { to: "/app/subscriptions", label: "Subscriptions", icon: Repeat },
 ];
 
 function SidebarContent({ pathname, onNavigate }: { pathname: string; onNavigate?: () => void }) {

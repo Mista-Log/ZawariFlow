@@ -33,7 +33,7 @@ export default function App() {
           <Route path="suppliers" element={<Suppliers />} />
           <Route path="settlements" element={<Settlements />} />
           <Route path="virtual-accounts" element={<VirtualAccounts />} />
-          <Route path="subscriptions" element={<Subscriptions />} />
+          {/* <Route path="subscriptions" element={<Subscriptions />} /> */}
         </Route>
       </Route>
 

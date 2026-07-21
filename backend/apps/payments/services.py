@@ -6,7 +6,21 @@ from django.conf import settings
 from rest_framework.exceptions import ValidationError
 
 from .models import VirtualAccount
+from decimal import Decimal
 
+from django.db import transaction
+from django.utils import timezone
+
+
+from apps.companies.models import (
+    PurchaseOrder,
+    Supplier,
+)
+
+from .models import (
+    Settlement,
+    SettlementStatus,
+)
 
 def get_access_token():
     """
@@ -152,3 +166,151 @@ def create_virtual_account(supplier):
     )
 
     return account
+
+
+
+
+@transaction.atomic
+def create_settlement(
+    *,
+    company,
+    user,
+    purchase_order,
+    supplier,
+    amount,
+):
+    """
+    Creates a settlement for a supplier.
+
+    NOTE:
+    This only creates the settlement record.
+
+    The Monnify disbursement API will be integrated
+    after this point.
+    """
+
+    # --------------------------------------------------
+    # Purchase Order Ownership
+    # --------------------------------------------------
+
+    if purchase_order.company != company:
+        raise ValidationError(
+            {
+                "purchase_order":
+                    "This purchase order does not belong to your company."
+            }
+        )
+
+    # --------------------------------------------------
+    # Supplier Ownership
+    # --------------------------------------------------
+
+    if supplier.company != company:
+        raise ValidationError(
+            {
+                "supplier":
+                    "This supplier does not belong to your company."
+            }
+        )
+
+    # --------------------------------------------------
+    # Supplier must belong to PO
+    # --------------------------------------------------
+
+    if not purchase_order.suppliers.filter(
+        id=supplier.id
+    ).exists():
+        raise ValidationError(
+            {
+                "supplier":
+                    "Supplier is not attached to this purchase order."
+            }
+        )
+
+    # --------------------------------------------------
+    # Amount Validation
+    # --------------------------------------------------
+
+    if amount <= Decimal("0"):
+        raise ValidationError(
+            {
+                "amount":
+                    "Settlement amount must be greater than zero."
+            }
+        )
+
+    if amount > purchase_order.amount:
+        raise ValidationError(
+            {
+                "amount":
+                    "Settlement amount cannot exceed purchase order amount."
+            }
+        )
+
+    # --------------------------------------------------
+    # Already Settled
+    # --------------------------------------------------
+
+    settled_amount = (
+        Settlement.objects.filter(
+            purchase_order=purchase_order,
+            supplier=supplier,
+            status=SettlementStatus.SUCCESS,
+        )
+        .values_list("amount", flat=True)
+    )
+
+    total_settled = sum(
+        settled_amount,
+        Decimal("0.00"),
+    )
+
+    remaining = purchase_order.amount - total_settled
+
+    if amount > remaining:
+        raise ValidationError(
+            {
+                "amount":
+                    f"Remaining balance is {remaining}."
+            }
+        )
+
+    # --------------------------------------------------
+    # Create Settlement
+    # --------------------------------------------------
+
+    settlement = Settlement.objects.create(
+        purchase_order=purchase_order,
+        supplier=supplier,
+        amount=amount,
+        currency=purchase_order.currency,
+        created_by=user,
+        status=SettlementStatus.PENDING,
+    )
+
+    # --------------------------------------------------
+    # TODO:
+    #
+    # Call Monnify Disbursement API here.
+    #
+    # Example:
+    #
+    # response = transfer_to_supplier(...)
+    #
+    # if response.success:
+    #
+    #     settlement.status = SettlementStatus.SUCCESS
+    #
+    #     settlement.provider_reference = ...
+    #
+    #     settlement.settled_at = timezone.now()
+    #
+    # else:
+    #
+    #     settlement.status = SettlementStatus.FAILED
+    #
+    # settlement.save()
+    #
+    # --------------------------------------------------
+
+    return settlement

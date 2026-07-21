@@ -18,15 +18,14 @@ const SECTIONS = [
       { id: "purchase-orders", label: "Purchase orders" },
       { id: "splits", label: "Splits & settlements" },
       { id: "virtual-accounts", label: "Virtual accounts" },
-      { id: "subscriptions", label: "Subscriptions" },
+      { id: "bank-verification", label: "Bank Verification" },
+      { id: "supplier-section", label: "Supplier Section" },
     ],
   },
   {
     group: "Platform",
     items: [
-      { id: "webhooks", label: "Webhooks" },
       { id: "errors", label: "Errors" },
-      { id: "rate-limits", label: "Rate limits" },
     ],
   },
 ];
@@ -88,9 +87,9 @@ export default function Docs() {
         <main className="min-w-0 flex-1">
           <Section id="introduction" title="Introduction">
             <p>
-              ZawariFlow is an API-first middleware for B2B supply chain payments. It lets an operator map a single bulk
-              purchase order to many downstream suppliers — factory, logistics, customs — and automates the split
-              settlement, virtual account routing, and corporate subscriptions in between.
+              ZawariFlow is a B2B supply chain payment platform that enables businesses to digitize purchase orders, onboard suppliers, collect payments through dedicated virtual accounts, and settle suppliers directly into their verified bank accounts.
+
+The platform acts as the payment orchestration layer between buyers, suppliers, and financial institutions by automating collections, payment tracking, and supplier settlements.
             </p>
             <p className="mt-3">
               The REST API uses predictable resource-oriented URLs, accepts JSON or form-encoded request bodies, returns
@@ -100,40 +99,47 @@ export default function Docs() {
 
           <Section id="quickstart" title="Quickstart">
             <p>Install nothing. Make your first call with a test key.</p>
-            <Code>{`curl https://api.zawariflow.com/v1/purchase_orders \\
-  -H "Authorization: Bearer sk_test_..." \\
-  -H "Idempotency-Key: po_demo_1" \\
-  -d reference="PO-DEMO" \\
-  -d amount=10000000 \\
-  -d currency="NGN" \\
-  -d "splits[0][supplier]=sup_demo_factory" \\
-  -d "splits[0][bps]=8000" \\
-  -d "splits[1][supplier]=sup_demo_logistics" \\
-  -d "splits[1][bps]=2000"`}</Code>
+            <Code>{`1. Register your company
+
+2. Create suppliers
+
+3. Verify supplier bank accounts
+
+4. Generate virtual accounts
+
+5. Create purchase orders
+
+6. Receive payments
+
+7. Settle suppliers`}</Code>
             <p>A successful response returns the created <code className="rounded bg-secondary px-1 py-0.5">PurchaseOrder</code> with each split.</p>
           </Section>
 
           <Section id="authentication" title="Authentication">
             <p>All requests are authenticated with a bearer token. Test keys are prefixed <code className="rounded bg-secondary px-1 py-0.5">sk_test_</code> and live keys with <code className="rounded bg-secondary px-1 py-0.5">sk_live_</code>.</p>
-            <Code>{`Authorization: Bearer sk_live_xxxxxxxxxxxxxxxxxxxx`}</Code>
+            <Code>{`Authorization: Bearer <JWT_ACCESS_TOKEN>`}</Code>
             <p>Never expose live keys client-side. Rotate keys from the dashboard at any time.</p>
           </Section>
 
           <Section id="purchase-orders" title="Purchase orders">
-            <p>A <strong>purchase order</strong> represents a bulk inflow that will be split across one or more suppliers when funded.</p>
+            <p>A <strong>purchase order</strong> represents a commercial agreement between a buyer and a supplier. Purchase Orders are used as the source of truth for every settlement made through ZawariFlow.</p>
             <h3 className="mt-6 text-base font-semibold">Create a purchase order</h3>
-            <Code>{`POST /v1/purchase_orders
+            <Code>{`POST /api/suppliers/purchase-orders/create/
 
 {
-  "reference": "PO-48211",
-  "amount": 18450000000,
-  "currency": "NGN",
-  "buyer": "buy_northbridge",
-  "splits": [
-    { "supplier": "sup_hexa_steel", "bps": 6200 },
-    { "supplier": "sup_bluelane",   "bps": 1800 },
-    { "supplier": "sup_customs",    "bps": 1400 },
-    { "supplier": "sup_platform",   "bps": 600  }
+  "buyer": "string",
+  "amount": "59",
+  "currency": "string",
+  "suppliers": [
+    "3fa85f64-5717-4562-b3fc-2c963f66afa6"
+  ],
+  "notes": "string",
+  "items": [
+    {
+      "name": "string",
+      "quantity": 9223372036854776000,
+      "unit": "string"
+    }
   ]
 }`}</Code>
             <p>Splits are expressed in basis points and must sum to 10,000.</p>
@@ -141,57 +147,96 @@ export default function Docs() {
 
           <Section id="splits" title="Splits & settlements">
             <p>When a PO is funded, ZawariFlow creates one <code className="rounded bg-secondary px-1 py-0.5">Settlement</code> per split, dispatched atomically. If any leg fails, the whole batch is reversed.</p>
-            <Code>{`GET /v1/settlements?purchase_order=po_48211`}</Code>
+            <Code>{`POST /payments/settlements/create/
+{
+    "purchase_order":"...",
+    "supplier":"...",
+    "amount":"25000"
+}
+
+POST /payments/settlements/{id}/process/
+
+Pending
+
+↓
+
+Processing
+
+↓
+
+Success
+
+or
+
+Failed
+            `}</Code>
           </Section>
 
           <Section id="virtual-accounts" title="Virtual accounts">
             <p>Issue per-counterparty virtual accounts to auto-route inflows to the correct ledger.</p>
-            <Code>{`POST /v1/virtual_accounts
+            <Code>{`POST /payments/virtual-accounts/create/
 
 {
-  "label": "Inflows · Northbridge Trading",
-  "route_to": "buy_northbridge"
-}`}</Code>
+    "supplier":"supplier_uuid"
+}
+
+`}</Code>
           </Section>
 
-          <Section id="subscriptions" title="Subscriptions">
-            <p>High-volume corporate subscriptions are billed against a customer mandate. Plans support monthly, quarterly, and annual cycles.</p>
-            <Code>{`POST /v1/subscriptions
+
+          <Section id="bank-verification" title="Bank Verification">
+            <p>Verifies against Monnify</p>
+            <Code>{`POST /payments/suppliers/{supplier_id}/bank-account/
 
 {
-  "customer": "cus_bluepine",
-  "plan": "plan_enterprise_monthly",
-  "amount": 450000000,
-  "currency": "NGN",
-  "mandate": "mnd_xxx"
-}`}</Code>
+    "bank_code":"035",
+    "bank_name":"Wema Bank",
+    "account_number":"0123456789"
+}
+
+`}</Code>
           </Section>
 
-          <Section id="webhooks" title="Webhooks">
-            <p>Subscribe to events to react to lifecycle changes. Payloads are signed with <code className="rounded bg-secondary px-1 py-0.5">X-ZawariFlow-Signature</code>.</p>
-            <ul className="mt-3 list-disc space-y-1 pl-5 text-muted-foreground">
-              <li><code className="rounded bg-secondary px-1 py-0.5">purchase_order.funded</code></li>
-              <li><code className="rounded bg-secondary px-1 py-0.5">settlement.succeeded</code></li>
-              <li><code className="rounded bg-secondary px-1 py-0.5">settlement.failed</code></li>
-              <li><code className="rounded bg-secondary px-1 py-0.5">subscription.charged</code></li>
-            </ul>
+          <Section id="supplier-section" title="Supplier Section">
+            <p>Suppliers belong to one company</p>
+            <Code>{`POST /suppliers/
+
+Create a supplier belonging to your company.
+
+{
+    "name":"ABC Steel Ltd",
+    "email":"finance@abcsteel.com",
+    "phone":"+234..."
+}
+
+`}</Code>
           </Section>
+
+
+
 
           <Section id="errors" title="Errors">
             <p>The API uses conventional HTTP response codes.</p>
             <Code>{`{
   "error": {
-    "type": "invalid_request_error",
-    "code": "splits_do_not_sum_to_10000",
-    "message": "Splits must sum to exactly 10000 basis points.",
-    "param": "splits"
-  }
+    "detail":"Supplier does not belong to your company."
+}
+
+  "error": {
+    "detail":"Settlement already processed."
+}
+
+  "error": {
+    "bank_code":"Invalid bank code."
+}
+
+  "error": {
+    "account_number":"Account verification failed."
+}
+
 }`}</Code>
           </Section>
 
-          <Section id="rate-limits" title="Rate limits">
-            <p>The default limit is 200 requests per second per workspace, with bursts up to 400. Contact us for enterprise quotas.</p>
-          </Section>
         </main>
       </div>
     </div>

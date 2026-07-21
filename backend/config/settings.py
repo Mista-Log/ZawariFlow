@@ -54,6 +54,7 @@ INSTALLED_APPS = [
     "apps.accounts",
     "apps.companies",
     "apps.payments",
+    "apps.dashboard",
 ]
 
 MIDDLEWARE = [
@@ -198,3 +199,4 @@ MONNIFY_BASE_URL = os.getenv("MONNIFY_BASE_URL", "https://sandbox.monnify.com")
 MONNIFY_API_KEY = os.getenv("MONNIFY_API_KEY")
 MONNIFY_SECRET_KEY = os.getenv("MONNIFY_SECRET_KEY")
 MONNIFY_CONTRACT_CODE = os.getenv("MONNIFY_CONTRACT_CODE")
+MONNIFY_SOURCE_ACCOUNT = os.getenv("MONNIFY_SOURCE_ACCOUNT")
