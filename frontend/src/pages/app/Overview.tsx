@@ -1,4 +1,5 @@
 import { Link } from "react-router-dom";
+import { useEffect, useState } from "react";
 import { ArrowUpRight, TrendingUp, TrendingDown, Plus } from "lucide-react";
 import {
   Area,
@@ -11,31 +12,35 @@ import {
 } from "recharts";
 import { PageHeader } from "@/components/page-header";
 import { Button } from "@/components/ui/button";
+import {
+  getDashboardOverview,
+  DashboardOverview,
+} from "@/api/dashboard";
 
-const VOLUME = [
-  { d: "Mon", v: 92 },
-  { d: "Tue", v: 118 },
-  { d: "Wed", v: 104 },
-  { d: "Thu", v: 156 },
-  { d: "Fri", v: 184 },
-  { d: "Sat", v: 78 },
-  { d: "Sun", v: 64 },
-];
+// const VOLUME = [
+//   { d: "Mon", v: 92 },
+//   { d: "Tue", v: 118 },
+//   { d: "Wed", v: 104 },
+//   { d: "Thu", v: 156 },
+//   { d: "Fri", v: 184 },
+//   { d: "Sat", v: 78 },
+//   { d: "Sun", v: 64 },
+// ];
 
-const STATS = [
-  { label: "Settled volume", value: "₦ 1.42B", delta: "+12.4%", up: true, sub: "vs last week" },
-  { label: "Open purchase orders", value: "47", delta: "+6", up: true, sub: "since yesterday" },
-  { label: "Pending settlements", value: "₦ 86.2M", delta: "-3.1%", up: false, sub: "vs last week" },
-  { label: "Active suppliers", value: "128", delta: "+4", up: true, sub: "this month" },
-];
+// const STATS = [
+//   { label: "Settled volume", value: "₦ 1.42B", delta: "+12.4%", up: true, sub: "vs last week" },
+//   { label: "Open purchase orders", value: "47", delta: "+6", up: true, sub: "since yesterday" },
+//   { label: "Pending settlements", value: "₦ 86.2M", delta: "-3.1%", up: false, sub: "vs last week" },
+//   { label: "Active suppliers", value: "128", delta: "+4", up: true, sub: "this month" },
+// ];
 
-const ACTIVITY = [
-  { id: "PO-48211", desc: "Split settled to 4 suppliers", amt: "₦ 184,500,000", status: "Settled", time: "2m ago" },
-  { id: "PO-48207", desc: "Inflow received · Northbridge Trading", amt: "₦ 92,000,000", status: "Processing", time: "14m ago" },
-  { id: "VA-30412", desc: "Virtual account created · Hexa Steel", amt: "—", status: "Active", time: "1h ago" },
-  { id: "SUB-1182", desc: "Subscription renewed · Bluepine Ltd", amt: "₦ 4,500,000", status: "Settled", time: "3h ago" },
-  { id: "PO-48198", desc: "Awaiting buyer approval", amt: "₦ 61,200,000", status: "Pending", time: "5h ago" },
-];
+// const ACTIVITY = [
+//   { id: "PO-48211", desc: "Split settled to 4 suppliers", amt: "₦ 184,500,000", status: "Settled", time: "2m ago" },
+//   { id: "PO-48207", desc: "Inflow received · Northbridge Trading", amt: "₦ 92,000,000", status: "Processing", time: "14m ago" },
+//   { id: "VA-30412", desc: "Virtual account created · Hexa Steel", amt: "—", status: "Active", time: "1h ago" },
+//   { id: "SUB-1182", desc: "Subscription renewed · Bluepine Ltd", amt: "₦ 4,500,000", status: "Settled", time: "3h ago" },
+//   { id: "PO-48198", desc: "Awaiting buyer approval", amt: "₦ 61,200,000", status: "Pending", time: "5h ago" },
+// ];
 
 function statusStyles(s: string) {
   switch (s) {
@@ -52,6 +57,76 @@ function statusStyles(s: string) {
 }
 
 export default function Overview() {
+
+  const [dashboard, setDashboard] =
+    useState<DashboardOverview | null>(null);
+
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchDashboard = async () => {
+      try {
+        const data = await getDashboardOverview();
+        console.log("Dashboard data:", data);
+        setDashboard(data);
+      } catch (err) {
+        console.error(err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchDashboard();
+
+    const interval = setInterval(fetchDashboard, 15000);
+
+    return () => clearInterval(interval);
+  }, []);
+
+
+  const stats = [
+    {
+      label: "Settled volume",
+      value: `₦ ${dashboard?.stats.settled_volume.toLocaleString()}`,
+      up: true,
+      delta: "",
+      sub: "",
+    },
+    {
+      label: "Open purchase orders",
+      value: dashboard?.stats.open_purchase_orders,
+      up: true,
+      delta: "",
+      sub: "",
+    },
+    {
+      label: "Pending settlements",
+      value: dashboard?.stats.pending_settlements,
+      up: false,
+      delta: "",
+      sub: "",
+    },
+    {
+      label: "Active suppliers",
+      value: dashboard?.stats.active_suppliers,
+      up: true,
+      delta: "",
+      sub: "",
+    },
+  ];
+
+
+  if (loading) {
+    return (
+      <>
+        <PageHeader
+          title="Overview"
+          description="Loading dashboard..."
+        />
+      </>
+    );
+  }
+
   return (
     <>
       <PageHeader
@@ -65,7 +140,7 @@ export default function Overview() {
       />
 
       <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-        {STATS.map((s) => (
+        {stats.map((s) => (
           <div key={s.label} className="rounded-xl border border-border bg-card p-5">
             <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">{s.label}</p>
             <p className="mt-2 font-mono text-2xl font-semibold tracking-tight">{s.value}</p>
@@ -91,7 +166,11 @@ export default function Overview() {
           </div>
           <div className="h-64">
             <ResponsiveContainer width="100%" height="100%">
-              <AreaChart data={VOLUME} margin={{ top: 8, right: 8, left: -16, bottom: 0 }}>
+              <AreaChart
+                data={dashboard?.chart.map((v) => ({
+                  d: v.day,
+                  v: v.volume,
+                }))} margin={{ top: 8, right: 8, left: -16, bottom: 0 }}>
                 <defs>
                   <linearGradient id="vol" x1="0" y1="0" x2="0" y2="1">
                     <stop offset="0%" stopColor="var(--color-primary)" stopOpacity={0.35} />
@@ -115,19 +194,18 @@ export default function Overview() {
           <h2 className="text-base font-semibold">Split breakdown</h2>
           <p className="text-xs text-muted-foreground">Average split distribution this week</p>
           <div className="mt-5 space-y-4">
-            {[
-              { label: "Goods (factories)", pct: 58 },
-              { label: "Logistics", pct: 21 },
-              { label: "Customs & duties", pct: 14 },
-              { label: "Platform fees", pct: 7 },
-            ].map((s) => (
+            {dashboard?.split_breakdown.map((s) => (
               <div key={s.label}>
                 <div className="flex justify-between text-sm">
                   <span>{s.label}</span>
-                  <span className="font-mono text-muted-foreground">{s.pct}%</span>
+                  <span>{s.pct}%</span>
                 </div>
+
                 <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-border">
-                  <div className="h-full bg-primary" style={{ width: `${s.pct}%` }} />
+                  <div
+                    className="h-full bg-primary"
+                    style={{ width: `${s.pct}%` }}
+                  />
                 </div>
               </div>
             ))}
@@ -143,16 +221,34 @@ export default function Overview() {
           </Link>
         </div>
         <div className="divide-y divide-border">
-          {ACTIVITY.map((a) => (
+          {dashboard?.recent_activity.map((a) => (
             <div key={a.id} className="flex items-center justify-between gap-4 px-5 py-3.5">
               <div className="flex min-w-0 items-center gap-4">
-                <span className="font-mono text-xs text-muted-foreground">{a.id}</span>
-                <span className="truncate text-sm">{a.desc}</span>
+                <span className="font-mono text-xs text-muted-foreground">
+                  {a.id}
+                </span>
+
+                <span className="truncate text-sm">
+                  {a.desc}
+                </span>
               </div>
+
               <div className="flex items-center gap-4">
-                <span className="hidden font-mono text-sm text-muted-foreground sm:inline">{a.amt}</span>
-                <span className={`rounded-full px-2 py-0.5 text-xs font-medium ${statusStyles(a.status)}`}>{a.status}</span>
-                <span className="hidden w-16 text-right text-xs text-muted-foreground md:inline">{a.time}</span>
+                <span className="hidden font-mono text-sm text-muted-foreground sm:inline">
+                  {a.amt ? `₦ ${a.amt.toLocaleString()}` : "—"}
+                </span>
+
+                <span
+                  className={`rounded-full px-2 py-0.5 text-xs font-medium ${statusStyles(
+                    a.status
+                  )}`}
+                >
+                  {a.status}
+                </span>
+
+                <span className="hidden w-20 text-right text-xs text-muted-foreground md:inline">
+                  {a.time}
+                </span>
               </div>
             </div>
           ))}

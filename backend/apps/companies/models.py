@@ -135,6 +135,31 @@ class Supplier(models.Model):
         blank=True,
     )
 
+
+    bank_code = models.CharField(
+        max_length=10,
+        null=True,
+        blank=True,
+    )
+
+    account_name = models.CharField(
+        max_length=255,
+        null=True,
+        blank=True,
+    )
+
+    transaction_reference = models.CharField(
+        max_length=100,
+        blank=True,
+        null=True,
+    )
+
+    account_number = models.CharField(
+        max_length=20,
+        blank=True,
+        null=True,
+    )
+
     created_at = models.DateTimeField(
         auto_now_add=True,
     )

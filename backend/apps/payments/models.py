@@ -167,7 +167,8 @@ class PaymentTransaction(models.Model):
 
     transaction_reference = models.CharField(
         max_length=255,
-        unique=True,
+        blank=True,
+        null=True,
     )
 
     narration = models.TextField(
@@ -212,12 +213,6 @@ class Settlement(models.Model):
         related_name="settlements",
     )
 
-    virtual_account = models.ForeignKey(
-        VirtualAccount,
-        on_delete=models.PROTECT,
-        related_name="settlements",
-    )
-
     amount = models.DecimalField(
         max_digits=18,
         decimal_places=2,
@@ -228,20 +223,39 @@ class Settlement(models.Model):
         default="NGN",
     )
 
+    provider_reference = models.CharField(
+        max_length=255,
+        blank=True,
+    )
+
     status = models.CharField(
         max_length=20,
         choices=SettlementStatus.choices,
         default=SettlementStatus.PENDING,
     )
 
-    provider_reference = models.CharField(
-        max_length=255,
-        blank=True,
-    )
-
     settled_at = models.DateTimeField(
         null=True,
         blank=True,
+    )
+
+    transaction_reference = models.CharField(
+        max_length=255,
+        unique=True,
+        blank=True,
+        null=True,
+    )
+
+    raw_response = models.JSONField(
+        default=dict,
+        blank=True,
+    )
+
+    created_by = models.ForeignKey(
+        "accounts.User",
+        on_delete=models.SET_NULL,
+        null=True,
+        related_name="created_settlements",
     )
 
     created_at = models.DateTimeField(
