@@ -438,59 +438,101 @@ export default function PurchaseOrders() {
         </button>
       </div>
 
-      <div className="overflow-x-auto rounded-xl border border-border bg-card">
-        <table className="w-full text-sm">
-          <thead className="border-b border-border bg-secondary/50 text-xs uppercase tracking-wider text-muted-foreground">
-            <tr>
-              <th className="px-5 py-3 text-left font-medium">PO ID</th>
-              <th className="px-5 py-3 text-left font-medium">Buyer</th>
-              <th className="px-5 py-3 text-left font-medium">Items</th>
-              <th className="px-5 py-3 text-right font-medium">Amount</th>
-              <th className="px-5 py-3 text-center font-medium">Suppliers</th>
-              <th className="px-5 py-3 text-left font-medium">Status</th>
-              <th className="px-5 py-3 text-right font-medium">Created</th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-border">
-            {purchaseOrders.map((p) => (
-              <tr key={p.po_number} className="hover:bg-secondary/40">
-                <td className="px-5 py-3 font-mono text-xs">{p.po_number}</td>
-                <td className="px-5 py-3">{p.buyer}</td>
-                <td className="px-5 py-3">
-                  {p.items?.length ? (
-                    <div className="space-y-1">
-                      {p.items.slice(0, 2).map((item) => (
-                        <div key={item.name} className="text-xs">
-                          {item.name}
-                          <span className="ml-1 text-muted-foreground">
-                            ({item.quantity} {item.unit})
-                          </span>
-                        </div>
-                      ))}
+      {loading ? (
+        <div className="flex h-48 items-center justify-center">
+          <p className="text-muted-foreground">
+            Loading purchase orders...
+          </p>
+        </div>
+      ) : purchaseOrders.length === 0 ? (
+        <div className="flex h-64 flex-col items-center justify-center rounded-xl border border-dashed border-border bg-card">
+          <h3 className="text-lg font-semibold">
+            No purchase orders available
+          </h3>
+          <p className="mt-2 text-sm text-muted-foreground">
+            You haven't created any purchase orders yet.
+          </p>
 
-                      {p.items.length > 2 && (
-                        <div className="text-xs text-primary">
-                          +{p.items.length - 2} more
-                        </div>
-                      )}
-                    </div>
-                  ) : (
-                    <span className="text-muted-foreground text-xs">
-                      No items
-                    </span>
-                  )}
-                </td>
-                <td className="px-5 py-3 text-right font-mono">{p.currency} {p.amount}</td>
-                <td className="px-5 py-3 text-center text-muted-foreground">{p.suppliers}</td>
-                <td className="px-5 py-3">
-                  <span className={`rounded-full px-2 py-0.5 text-xs font-medium ${badge(p.status)}`}>{p.status}</span>
-                </td>
-                <td className="px-5 py-3 text-right text-muted-foreground">{p.created}</td>
+          <div className="mt-6">
+            <NewPODialog onSuccess={loadPurchaseOrders} />
+          </div>
+        </div>
+      ) : (
+        <div className="overflow-x-auto rounded-xl border border-border bg-card">
+          <table className="w-full text-sm">
+            <thead className="border-b border-border bg-secondary/50 text-xs uppercase tracking-wider text-muted-foreground">
+              <tr>
+                <th className="px-5 py-3 text-left font-medium">PO ID</th>
+                <th className="px-5 py-3 text-left font-medium">Buyer</th>
+                <th className="px-5 py-3 text-left font-medium">Items</th>
+                <th className="px-5 py-3 text-right font-medium">Amount</th>
+                <th className="px-5 py-3 text-center font-medium">Suppliers</th>
+                <th className="px-5 py-3 text-left font-medium">Status</th>
+                <th className="px-5 py-3 text-right font-medium">Created</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+            </thead>
+
+            <tbody className="divide-y divide-border">
+              {purchaseOrders.map((p) => (
+                <tr key={p.po_number} className="hover:bg-secondary/40">
+                  <td className="px-5 py-3 font-mono text-xs">
+                    {p.po_number}
+                  </td>
+
+                  <td className="px-5 py-3">{p.buyer}</td>
+
+                  <td className="px-5 py-3">
+                    {p.items?.length ? (
+                      <div className="space-y-1">
+                        {p.items.slice(0, 2).map((item) => (
+                          <div key={item.name} className="text-xs">
+                            {item.name}
+                            <span className="ml-1 text-muted-foreground">
+                              ({item.quantity} {item.unit})
+                            </span>
+                          </div>
+                        ))}
+
+                        {p.items.length > 2 && (
+                          <div className="text-xs text-primary">
+                            +{p.items.length - 2} more
+                          </div>
+                        )}
+                      </div>
+                    ) : (
+                      <span className="text-xs text-muted-foreground">
+                        No items
+                      </span>
+                    )}
+                  </td>
+
+                  <td className="px-5 py-3 text-right font-mono">
+                    {p.currency} {p.amount}
+                  </td>
+
+                  <td className="px-5 py-3 text-center text-muted-foreground">
+                    {p.suppliers}
+                  </td>
+
+                  <td className="px-5 py-3">
+                    <span
+                      className={`rounded-full px-2 py-0.5 text-xs font-medium ${badge(
+                        p.status
+                      )}`}
+                    >
+                      {p.status}
+                    </span>
+                  </td>
+
+                  <td className="px-5 py-3 text-right text-muted-foreground">
+                    {p.created}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
     </>
   );
 }
