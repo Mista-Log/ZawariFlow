@@ -85,14 +85,28 @@ import {
 //   },
 // ];
 
-function badge(s: string) {
-  switch (s) {
-    case "Settled": return "bg-success/10 text-success";
-    case "Processing": return "bg-primary/10 text-primary";
-    case "Pending": return "bg-warning/15 text-warning-foreground";
-    case "Failed": return "bg-destructive/10 text-destructive";
-    case "DRAFT": return "bg-secondary text-secondary-foreground";
-    default: return "bg-secondary";
+function badge(status: string) {
+  switch (status) {
+    case "DRAFT":
+      return "bg-secondary text-secondary-foreground";
+
+    case "PENDING":
+      return "bg-warning/10 text-warning";
+
+    case "APPROVED":
+      return "bg-primary/10 text-primary";
+
+    case "PARTIALLY_SETTLED":
+      return "bg-primary/10 text-primary";
+
+    case "SETTLED":
+      return "bg-success/10 text-success";
+
+    case "CANCELLED":
+      return "bg-destructive/10 text-destructive";
+
+    default:
+      return "bg-secondary";
   }
 }
 
@@ -394,6 +408,17 @@ const onSubmit = async (e: React.FormEvent) => {
 export default function PurchaseOrders() {
 
   const [loading, setLoading] = useState(false);
+  const [activeFilter, setActiveFilter] = useState("ALL");
+  const FILTERS = [
+    "ALL",
+    "DRAFT",
+    "PENDING",
+    "APPROVED",
+    "PARTIALLY_SETTLED",
+    "SETTLED",
+    "CANCELLED",
+  ];
+  
 
   const [purchaseOrders, setPurchaseOrders] =
     useState<PurchaseOrder[]>([]);
@@ -416,6 +441,23 @@ export default function PurchaseOrders() {
     loadPurchaseOrders();
   }, []);
 
+  const filteredPurchaseOrders =
+    activeFilter === "ALL"
+      ? purchaseOrders
+      : purchaseOrders.filter(
+          (po) => po.status === activeFilter
+        );
+
+  const FILTER_LABELS: Record<string, string> = {
+    ALL: "All",
+    DRAFT: "Draft",
+    PENDING: "Pending",
+    APPROVED: "Approved",
+    PARTIALLY_SETTLED: "Partially Settled",
+    SETTLED: "Settled",
+    CANCELLED: "Cancelled",
+  };
+
   return (
     <>
       <PageHeader
@@ -423,16 +465,26 @@ export default function PurchaseOrders() {
         description="Bulk inflows mapped to downstream suppliers."
         actions={
           <>
-            <Button variant="outline" size="sm"><Download className="mr-1.5 h-4 w-4" /> Export</Button>
+            {/* <Button variant="outline" size="sm"><Download className="mr-1.5 h-4 w-4" /> Export</Button> */}
             <NewPODialog onSuccess={loadPurchaseOrders} />
           </>
         }
       />
 
       <div className="mb-4 flex flex-wrap items-center gap-2">
-        {["All", "Settled", "Processing", "Pending", "Failed"].map((t, i) => (
-          <button key={t} className={`rounded-full border px-3 py-1 text-xs font-medium transition ${i === 0 ? "border-primary bg-primary/10 text-primary" : "border-border text-muted-foreground hover:bg-secondary"}`}>{t}</button>
-        ))}
+      {FILTERS.map((status) => (
+        <button
+          key={status}
+          onClick={() => setActiveFilter(status)}
+          className={`rounded-full border px-3 py-1 text-xs font-medium transition ${
+            activeFilter === status
+              ? "border-primary bg-primary/10 text-primary"
+              : "border-border text-muted-foreground hover:bg-secondary"
+          }`}
+        >
+          {FILTER_LABELS[status]}
+        </button>
+      ))}
         <button className="ml-auto inline-flex items-center gap-1.5 rounded-md border border-border px-3 py-1.5 text-xs text-muted-foreground hover:bg-secondary">
           <Filter className="h-3.5 w-3.5" /> Filters
         </button>
@@ -473,7 +525,7 @@ export default function PurchaseOrders() {
             </thead>
 
             <tbody className="divide-y divide-border">
-              {purchaseOrders.map((p) => (
+              {filteredPurchaseOrders.map((p) => (
                 <tr key={p.po_number} className="hover:bg-secondary/40">
                   <td className="px-5 py-3 font-mono text-xs">
                     {p.po_number}
@@ -515,13 +567,9 @@ export default function PurchaseOrders() {
                   </td>
 
                   <td className="px-5 py-3">
-                    <span
-                      className={`rounded-full px-2 py-0.5 text-xs font-medium ${badge(
-                        p.status
-                      )}`}
-                    >
-                      {p.status}
-                    </span>
+                  <span className={`rounded-full px-2 py-0.5 text-xs font-medium ${badge(p.status)}`}>
+                    {FILTER_LABELS[p.status] ?? p.status}
+                  </span>
                   </td>
 
                   <td className="px-5 py-3 text-right text-muted-foreground">
