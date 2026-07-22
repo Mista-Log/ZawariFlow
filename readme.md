@@ -1,383 +1,432 @@
 # ZawariFlow
 
-## Overview
+**ZawariFlow** is a supply chain payment orchestration platform that enables businesses to manage purchase orders, suppliers, virtual accounts, collections, and settlements from a centralized dashboard.
 
-ZawariFlow is a B2B supply chain financing and payment platform designed to streamline the way businesses procure goods, manage suppliers, and process payments. The platform digitizes the complete purchase order lifecycle, from creating purchase orders to supplier settlement, while leveraging virtual accounts and payment infrastructure to improve transparency, accountability, and cash flow.
+The platform simplifies business-to-business (B2B) payments by allowing companies to:
 
-The platform solves one of the biggest challenges in supply chain operations: fragmented procurement processes, delayed supplier payments, and poor visibility into financial transactions. By integrating payment services directly into procurement workflows, businesses can manage suppliers, monitor purchase orders, receive customer payments, and automate settlements from a single platform.
-
-Built for scalability, ZawariFlow is suitable for manufacturers, distributors, wholesalers, agricultural supply chains, and enterprise procurement teams handling high-volume transactions.
-
----
-
-# Problem Statement
-
-Many businesses, especially in emerging markets, still rely on spreadsheets, manual payment reconciliation, and disconnected procurement systems. These methods often result in:
-
-- Slow supplier onboarding
-- Difficult payment reconciliation
-- Poor visibility into purchase order status
-- Delayed supplier settlements
-- Lack of transparency across the procurement lifecycle
-- Manual tracking of bulk purchases and inventory inflow
-
-ZawariFlow addresses these problems by combining procurement management with integrated financial services.
+* Create and manage purchase orders
+* Onboard and manage suppliers
+* Generate dedicated virtual accounts for collections
+* Track incoming payments in real time
+* Split and settle payments to multiple suppliers
+* Monitor financial activities through a live dashboard
 
 ---
 
-# Solution
-
-ZawariFlow provides a centralized platform where organizations can:
-
-- Register and manage suppliers
-- Create structured purchase orders
-- Handle bulk item procurement
-- Receive customer payments into dedicated virtual accounts
-- Monitor payment progress
-- Automatically reconcile transactions
-- Settle suppliers securely
-- Track every stage of procurement from initiation to completion
-
----
-
-# Core Features
-
-## 1. Supplier Management
-
-Businesses can onboard and manage all suppliers within one centralized directory.
-
-### Features
-
-- Supplier registration
-- Supplier profile management
-- Business information storage
-- Banking information management
-- Contact management
-- Supplier status tracking
-- Transaction volume tracking
-
-Each supplier contains information such as:
-
-- Business Name
-- Category
-- Country
-- Email
-- Phone Number
-- Bank Name
-- Account Number
-- Address
-- Status
-
----
-
-## 2. Purchase Order Management
-
-The purchase order module allows organizations to create procurement requests containing multiple items for bulk purchases.
-
-### Features
-
-- Create purchase orders
-- Assign suppliers
-- Add multiple purchase items
-- Track purchase order status
-- Record procurement notes
-- Multi-currency support
-
-Each purchase order includes:
-
-- Buyer
-- Purchase Order Number
-- Amount
-- Currency
-- Supplier(s)
-- Notes
-- Purchase Items
-- Status
-- Creation Date
-
----
-
-## 3. Bulk Purchase Items
-
-Instead of creating separate purchase orders for each product, users can include multiple items inside a single purchase order.
-
-Each item stores:
-
-- Product Name
-- Quantity
-- Unit of Measurement
-
-Example:
-
-| Item | Quantity | Unit |
-|------|----------|------|
-| Rice | 500 | Bags |
-| Fertilizer | 100 | Tons |
-| Maize | 200 | Bags |
-
-This enables efficient procurement for wholesale and enterprise buyers.
-
----
-
-## 4. Supplier Assignment
-
-Rather than manually typing supplier information, purchase orders are linked directly to registered suppliers.
-
-Benefits include:
-
-- Reduced errors
-- Faster procurement
-- Easier supplier tracking
-- Strong data integrity
-- Backend references suppliers using unique IDs
-
----
-
-## 5. Virtual Account Integration
-
-Each supplier or procurement workflow can be assigned dedicated virtual accounts for receiving payments.
-
-Benefits include:
-
-- Automatic payment identification
-- Easier reconciliation
-- Reduced payment disputes
-- Improved transparency
-
-Incoming payments can be tied directly to the associated purchase order.
-
----
-
-## 6. Payment Processing
-
-The platform integrates with payment APIs to facilitate:
-
-- Incoming payments
-- Outgoing settlements
-- Account verification
-- Payment confirmation
-- Transaction monitoring
-
----
-
-## 7. Supplier Settlement
-
-Once purchase orders are completed and payments are confirmed, suppliers can be settled directly from the platform.
-
-The settlement module manages:
-
-- Settlement initiation
-- Settlement status
-- Settlement history
-- Settlement amount
-- Settlement destination
-
----
-
-## 8. Dashboard & Analytics
-
-The dashboard provides a real-time overview of procurement operations.
-
-Metrics include:
-
-- Total Purchase Orders
-- Active Suppliers
-- Total Procurement Volume
-- Settled Transactions
-- Pending Orders
-- Processing Orders
-- Failed Transactions
-
----
-
-## 9. Status Tracking
-
-Every purchase order progresses through defined stages.
-
-Possible statuses include:
-
-- Draft
-- Pending
-- Processing
-- Settled
-- Failed
-
-This allows procurement teams to easily monitor operational progress.
-
----
-
-## 10. Search & Filtering
-
-Users can quickly locate records using filters such as:
-
-- Supplier
-- Status
-- Date
-- Purchase Order Number
-- Currency
-
----
-
-# Platform Workflow
-
-## Supplier Onboarding
-
-1. Business registers supplier
-2. Supplier information is stored
-3. Banking information is verified
-4. Supplier becomes available for procurement
-
----
-
-## Purchase Order Creation
-
-1. Buyer creates purchase order
-2. Selects supplier
-3. Adds multiple items
-4. Specifies quantities
-5. Sets total amount
-6. Submits purchase order
-
----
-
-## Payment Collection
-
-Customer payments are received into virtual accounts.
-
-The platform automatically:
-
-- Detects payment
-- Matches payment to purchase order
-- Updates payment status
-
----
-
-## Settlement
-
-Once payment conditions are satisfied:
-
-- Settlement is initiated
-- Supplier receives payment
-- Transaction history is updated
-
----
-
-# User Roles
-
-## Business
-
-Can:
-
-- Create purchase orders
-- Manage suppliers
-- View procurement analytics
-- Initiate settlements
-- Track payments
-
----
-
-## Supplier
-
-Can:
-
-- Receive purchase orders
-- Receive settlements
-- Monitor payment status
-
----
-
-## Administrator
-
-Can:
-
-- Monitor all platform activity
-- Manage users
-- Review settlements
-- Audit transactions
-- Configure platform settings
-
----
-
-# Security Features
-
-- JWT Authentication
-- Secure API endpoints
-- Role-based access control
-- Bank account verification
-- Protected payment operations
-- Transaction validation
-
----
-
-# Technology Stack
+# Tech Stack
 
 ## Frontend
 
-- React
-- TypeScript
-- Tailwind CSS
-- shadcn/ui
-- React Router
-- Lucide Icons
-
----
+* React
+* TypeScript
+* Vite
+* React Router
+* Tailwind CSS
+* Shadcn UI
+* Recharts
+* Lucide React
 
 ## Backend
 
-- Django
-- Django REST Framework
-- PostgreSQL
+* Django
+* Django REST Framework
+* PostgreSQL
+* JWT Authentication
+* drf-spectacular (Swagger Documentation)
+
+## Payment Provider
+
+* Monnify API
+
+---
+
+# Project Structure
+
+```
+zawariflow/
+│
+├── backend/
+│   ├── apps/
+│   │   ├── accounts/
+│   │   ├── companies/
+│   │   ├── dashboard/
+│   │   └── payments/
+│   │
+│   ├── config/
+│   ├── manage.py
+│   └── requirements.txt
+│
+└── frontend/
+    ├── src/
+    ├── public/
+    ├── package.json
+    └── vite.config.ts
+```
+
+---
+
+# Features
+
+## Authentication
+
+* User Registration
+* User Login
+* JWT Authentication
+* Company Profile
+* Role-based Access Control
+
+---
+
+## Company Management
+
+* Create Company
+* Update Company
+* Invite Team Members
+* Assign Roles
+
+---
+
+## Supplier Management
+
+* Register Suppliers
+* Supplier Categories
+* Supplier Verification Status
+* Bank Account Management
+* Transaction History
+
+---
+
+## Purchase Orders
+
+* Create Purchase Orders
+* Manage Purchase Order Items
+* Approve Purchase Orders
+* Track Purchase Order Status
+
+---
+
+## Virtual Accounts
+
+* Create Dedicated Virtual Accounts
+* Automatic Account Assignment
+* Real-time Payment Tracking
 
 ---
 
 ## Payments
 
-- Nomba APIs
-- Virtual Accounts
-- Bank Transfers
-- Settlement APIs
+* Incoming Payment Tracking
+* Payment Webhooks
+* Settlement Processing
+* Payment History
 
 ---
 
-# Future Enhancements
+## Dashboard
 
-The platform is designed with extensibility in mind.
-
-Planned features include:
-
-- Multi-supplier purchase orders
-- Invoice generation
-- Inventory management
-- Shipment tracking
-- Delivery confirmation
-- Procurement approvals
-- AI-powered procurement recommendations
-- Payment scheduling
-- Supplier performance analytics
-- Automated reconciliation
-- Real-time notifications
-- ERP integrations
-- Financial reporting
-- Mobile application
-- Multi-company support
+* Total Settled Volume
+* Pending Settlements
+* Active Suppliers
+* Open Purchase Orders
+* Settlement Volume Chart
+* Split Breakdown
+* Recent Activities
 
 ---
 
-# Key Benefits
+# Requirements
 
-- Centralized procurement management
-- Faster supplier payments
-- Automated reconciliation
-- Better financial visibility
-- Improved procurement transparency
-- Reduced manual processes
-- Enhanced operational efficiency
-- Scalable enterprise architecture
-- Seamless payment integration
-- End-to-end purchase order tracking
+Before running the project, install:
+
+* Python 3.12+
+* Node.js 20+
+* PostgreSQL
+* Git
 
 ---
 
-# Conclusion
+# Backend Setup
 
-ZawariFlow transforms traditional procurement into a modern, digital-first workflow by combining supplier management, purchase order processing, virtual accounts, and automated payment settlements into one integrated platform. By eliminating fragmented processes and enabling real-time financial visibility, the platform empowers businesses to procure more efficiently, pay suppliers faster, and scale their supply chain operations with confidence.
+## 1. Clone the repository
+
+```bash
+git clone https://github.com/your-org/zawariflow.git
+
+cd zawariflow
+```
+
+---
+
+## 2. Navigate into the backend
+
+```bash
+cd backend
+```
+
+---
+
+## 3. Create a virtual environment
+
+### Windows
+
+```bash
+python -m venv .venv
+```
+
+### Linux / macOS
+
+```bash
+python3 -m venv .venv
+```
+
+---
+
+## 4. Activate the virtual environment
+
+### Windows
+
+```bash
+.venv\Scripts\activate
+```
+
+### Linux / macOS
+
+```bash
+source .venv/bin/activate
+```
+
+---
+
+## 5. Install dependencies
+
+```bash
+uv sync
+```
+
+---
+
+## 6. Create a `.env` file
+
+Create a file named:
+
+```
+.env
+```
+
+inside the **backend** directory.
+
+Example:
+
+```env
+
+MONNIFY_BASE_URL=https://sandbox.monnify.com MONNIFY_API_KEY=your-api-key MONNIFY_SECRET_KEY=your-secret-key MONNIFY_CONTRACT_CODE=your-contract-code MONNIFY_SOURCE_ACCOUNT=your-source-account
+
+```
+
+Update these values according to your environment.
+
+---
+
+## 7. Apply migrations
+
+```bash
+python manage.py makemigrations
+
+python manage.py migrate
+```
+
+---
+
+## 8. Create a superuser
+
+```bash
+python manage.py createsuperuser
+```
+
+---
+
+## 9. Run the backend
+
+```bash
+python manage.py runserver
+```
+
+Backend runs on
+
+```
+http://127.0.0.1:8000
+```
+
+---
+
+# Frontend Setup
+
+## 1. Open another terminal
+
+Navigate to the frontend folder.
+
+```bash
+cd frontend
+```
+
+---
+
+## 2. Install dependencies
+
+```bash
+npm install
+```
+
+or
+
+```bash
+pnpm install
+```
+
+---
+
+## 3. Create a `.env` file
+
+Example:
+
+```env
+VITE_API_BASE_URL=http://127.0.0.1:8000/api
+```
+
+---
+
+## 4. Run the frontend
+
+```bash
+npm run dev
+```
+
+or
+
+```bash
+pnpm dev
+```
+
+Frontend runs on
+
+```
+http://localhost:5173
+```
+
+---
+
+# API Documentation
+
+Swagger UI
+
+```
+http://127.0.0.1:8000/api/docs/
+```
+
+OpenAPI Schema
+
+```
+http://127.0.0.1:8000/api/schema/
+```
+
+---
+
+# Running the Complete Application
+
+Start the backend
+
+```bash
+cd backend
+
+python manage.py runserver
+```
+
+Open another terminal
+
+```bash
+cd frontend
+
+npm run dev
+```
+
+Visit
+
+```
+http://localhost:5173
+```
+
+---
+
+# Default Development Flow
+
+1. Register a new account.
+2. Create your company profile.
+3. Add suppliers.
+4. Create purchase orders.
+5. Generate virtual accounts.
+6. Receive payments.
+7. Process settlements.
+8. Monitor activities from the dashboard.
+
+---
+
+
+---
+
+# Scripts
+
+## Backend
+
+```bash
+python manage.py runserver
+python manage.py migrate
+python manage.py makemigrations
+python manage.py createsuperuser
+```
+
+---
+
+## Frontend
+
+```bash
+npm install
+npm run dev
+npm run build
+npm run preview
+```
+
+---
+
+# Contributors
+
+Contributions are welcome.
+
+1. Fork the repository.
+2. Create a feature branch.
+
+```bash
+git checkout -b feature/your-feature
+```
+
+3. Commit your changes.
+
+```bash
+git commit -m "Add new feature"
+```
+
+4. Push to your branch.
+
+```bash
+git push origin feature/your-feature
+```
+
+5. Open a Pull Request.
+
+---
+
+
+---
+
+## Authors
+
+Developed with by the **ZawariFlow Team**.
